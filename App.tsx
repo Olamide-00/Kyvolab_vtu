@@ -15,6 +15,12 @@ export default function App() {
     "Tinos-Bold": require("./assets/fonts/Tinos-Bold.ttf"),
     "Tinos-Italic": require("./assets/fonts/Tinos-Italic.ttf"),
     "Tinos-BoldItalic": require("./assets/fonts/Tinos-BoldItalic.ttf"),
+    // Older screens reference Poppins by name; alias those to the app font
+    // so they render consistently instead of falling back to the system font.
+    "Poppins-Regular": require("./assets/fonts/Tinos-Regular.ttf"),
+    "Poppins-Medium": require("./assets/fonts/Tinos-Regular.ttf"),
+    "Poppins-SemiBold": require("./assets/fonts/Tinos-Bold.ttf"),
+    "Poppins-Bold": require("./assets/fonts/Tinos-Bold.ttf"),
   });
 
   useEffect(() => {

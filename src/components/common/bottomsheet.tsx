@@ -9,14 +9,14 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Text from "./txt";
+import { FONTS, RADIUS, THEME } from "../../theme";
 
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const ACCENT_GREEN = "#A9D99B";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
+const BRAND = THEME.primary;
+const LIGHT_GREEN = THEME.primarySoft;
+const INK = THEME.text;
+const MUTED = THEME.textMuted;
+const BORDER = THEME.border;
+const FIELD_BG = THEME.surface;
 
 interface Option {
   label: string;
@@ -190,13 +190,17 @@ const styles = StyleSheet.create({
   selectorButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.pill,
+    backgroundColor: LIGHT_GREEN,
   },
   selectorText: {
     fontSize: 14,
     color: BRAND,
     marginLeft: 6,
-    fontWeight: "600",
+    fontFamily: FONTS.semibold,
   },
   chevronIcon: {
     marginLeft: 4,
@@ -213,9 +217,9 @@ const styles = StyleSheet.create({
     backgroundColor: FIELD_BG,
     borderWidth: 1.5,
     borderColor: BORDER,
-    borderRadius: 14,
+    borderRadius: RADIUS.lg,
     paddingHorizontal: 14,
-    height: 56,
+    height: 58,
   },
   fieldLeft: {
     flexDirection: "row",
@@ -235,17 +239,17 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   fieldPlaceholder: {
-    color: "#A8AFA5",
+    color: MUTED,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(18,40,8,0.45)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
   bottomSheetContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: THEME.surface,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
     paddingBottom: 34,
     maxHeight: "70%",
   },
@@ -262,8 +266,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   bottomSheetTitle: {
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 18,
+    fontFamily: FONTS.bold,
     color: INK,
     marginBottom: 14,
   },
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: FIELD_BG,
+    backgroundColor: THEME.primaryTint,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,

@@ -39,7 +39,7 @@ const ChangePassword = () => {
               <TextInput
                 style={styles.input}
                 placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#A2A2A2"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -51,7 +51,7 @@ const ChangePassword = () => {
                 <Ionicons
                   name={showPassword ? "eye-outline" : "eye-off-outline"}
                   size={20}
-                  color="#9CA3AF"
+                  color="#A2A2A2"
                 />
               </TouchableOpacity>
             </View>

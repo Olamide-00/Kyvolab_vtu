@@ -1,11 +1,7 @@
 import { StyleSheet, TextInput, View, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
 import { Filter, SearchNormal, CloseCircle } from "iconsax-react-native";
-import { COLORS } from "../../constants/Colors";
+import { FONTS, RADIUS, SHADOW, THEME } from "../../theme";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -35,12 +31,12 @@ const SearchBar = ({
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <SearchNormal size={wp("5%")} color={COLORS.gray} variant="Outline" />
+        <SearchNormal size={19} color={THEME.primary} variant="Outline" />
 
         <TextInput
           style={styles.input}
           placeholder={placeholder}
-          placeholderTextColor={COLORS.gray}
+          placeholderTextColor={THEME.textMuted}
           value={searchText}
           onChangeText={handleTextChange}
           returnKeyType="search"
@@ -50,7 +46,7 @@ const SearchBar = ({
 
         {searchText.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <CloseCircle size={wp("4.5%")} color={COLORS.gray} variant="Bold" />
+            <CloseCircle size={18} color={THEME.textMuted} variant="Bold" />
           </TouchableOpacity>
         )}
       </View>
@@ -59,9 +55,9 @@ const SearchBar = ({
         <TouchableOpacity
           onPress={onFilterPress}
           style={styles.filterButton}
-          activeOpacity={0.7}
+          activeOpacity={0.8}
         >
-          <Filter size={wp("5%")} color={COLORS.brand} variant="Bold" />
+          <Filter size={19} color={THEME.onPrimary} variant="Bold" />
         </TouchableOpacity>
       )}
     </View>
@@ -74,46 +70,39 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: wp("3%"),
-    marginHorizontal: wp("4%"),
-    marginVertical: hp("1%"),
+    gap: 10,
+    marginHorizontal: 16,
+    marginVertical: 8,
   },
   searchContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.bg,
-    borderRadius: wp("3%"),
-    paddingHorizontal: wp("4%"),
-    paddingVertical: hp("1.5%"),
+    height: 50,
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.lg,
+    paddingHorizontal: 16,
+    ...SHADOW.card,
   },
   input: {
     flex: 1,
-    marginLeft: wp("3%"),
-    fontSize: wp("4%"),
-    color: COLORS.black,
+    marginLeft: 10,
+    fontSize: 15,
+    fontFamily: FONTS.regular,
+    color: THEME.text,
     padding: 0,
     includeFontPadding: false,
   },
   clearButton: {
-    padding: wp("1%"),
+    padding: 4,
   },
   filterButton: {
-    backgroundColor: COLORS.white,
-    width: wp("11%"),
-    height: wp("11%"),
-    borderRadius: wp("3%"),
+    backgroundColor: THEME.primary,
+    width: 50,
+    height: 50,
+    borderRadius: RADIUS.lg,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.lightGray,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    ...SHADOW.card,
   },
 });

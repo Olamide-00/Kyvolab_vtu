@@ -20,13 +20,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Text from "../../../../components/common/txt";
 
-const BRAND = "#1B3710";
-const BRAND_SOFT = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
-const ERROR_RED = "#D92D20";
+const BRAND = "#111111";
+const BRAND_SOFT = "#F0F0F0";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#E7E7E7";
+const FIELD_BG = "#FBFBFB";
+const ERROR_RED = "#515151";
 
 const MIN_AGE = 13;
 
@@ -206,7 +206,7 @@ const SignUpDetails = () => {
             />
             <TextInput
               placeholder="e.g. Olamide Oladele"
-              placeholderTextColor="#A8AFA5"
+              placeholderTextColor="#ADADAD"
               value={fullName}
               onChangeText={(text) => {
                 setFullName(text);
@@ -235,7 +235,7 @@ const SignUpDetails = () => {
             <View style={styles.phoneDivider} />
             <TextInput
               placeholder="903 601 8013"
-              placeholderTextColor="#A8AFA5"
+              placeholderTextColor="#ADADAD"
               value={phoneNumber}
               onChangeText={handlePhoneChange}
               onFocus={() => setFocusedField("phone")}
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   placeholderText: {
-    color: "#A8AFA5",
+    color: "#ADADAD",
   },
   countryFlag: {
     fontSize: 18,

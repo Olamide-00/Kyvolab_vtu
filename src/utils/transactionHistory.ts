@@ -46,21 +46,21 @@ export const getCategoryIcon = (category?: string): string => {
 
 export const getCategoryColor = (
   category?: string,
-  brandColor = "#6C2BD9",
+  brandColor = "#111111",
 ): string => {
   const map: { [key: string]: string } = {
-    airtime: "#FF6B6B",
-    data: "#4ECDC4",
-    betting: "#FFD93D",
-    netflix: "#E50914",
-    electricity: "#95E1D3",
-    tv: "#6C5CE7",
-    gotv: "#6C5CE7",
-    dstv: "#A29BFE",
-    jamb: "#4C6FFF",
-    waec: "#4C6FFF",
-    education: "#4C6FFF",
-    transfer: "#22c55e",
+    airtime: "#8A8A8A",
+    data: "#B1B1B1",
+    betting: "#D6D6D6",
+    netflix: "#393939",
+    electricity: "#D0D0D0",
+    tv: "#2B2B2B",
+    gotv: "#2B2B2B",
+    dstv: "#A4A4A4",
+    jamb: "#727272",
+    waec: "#727272",
+    education: "#727272",
+    transfer: "#9B9B9B",
     wallet: brandColor,
   };
   return map[(category || "").toLowerCase()] || brandColor;

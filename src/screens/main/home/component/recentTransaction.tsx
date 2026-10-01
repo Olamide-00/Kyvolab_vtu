@@ -11,10 +11,7 @@ import {
 } from "../../../../api/hooks/useBills";
 import Text from "../../../../components/common/txt";
 import { mergeHistories } from "../../../../utils/transactionHistory";
-
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const BORDER = "#ECEFEA";
+import { RADIUS, SHADOW, THEME } from "../../../../theme";
 
 const RecentTransaction = () => {
   const navigation = useNavigation<any>();
@@ -88,13 +85,22 @@ const RecentTransaction = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <Text variant="semibold" size="md" color="#141613">
-          Recent Transactions
+        <Text variant="bold" size="md" color={THEME.text}>
+          Recent activity
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Transaction")}>
-          <Text variant="semibold" size="sm" color={BRAND}>
-            View All
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Transaction")}
+          style={styles.viewAll}
+          activeOpacity={0.7}
+        >
+          <Text variant="semibold" size="sm" color={THEME.primary}>
+            See all
           </Text>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={14}
+            color={THEME.primary}
+          />
         </TouchableOpacity>
       </View>
 
@@ -111,13 +117,13 @@ const RecentTransaction = () => {
             <MaterialCommunityIcons
               name="receipt-text-outline"
               size={28}
-              color={BRAND}
+              color={THEME.primary}
             />
           </View>
-          <Text variant="semibold" size="sm" color="#141613">
+          <Text variant="semibold" size="md" color={THEME.text}>
             No transactions yet
           </Text>
-          <Text variant="regular" size="xs" color="#8A9086" center>
+          <Text variant="regular" size="sm" color={THEME.textMuted} center>
             Your recent transactions will appear here
           </Text>
         </View>
@@ -148,6 +154,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
+  viewAll: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: RADIUS.pill,
+    backgroundColor: THEME.primarySoft,
+  },
 
   listContainer: {
     gap: 8,
@@ -158,12 +173,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 28,
     gap: 4,
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.xl,
+    ...SHADOW.card,
   },
   emptyIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: LIGHT_GREEN,
+    width: 56,
+    height: 56,
+    borderRadius: RADIUS.lg,
+    backgroundColor: THEME.primarySoft,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
@@ -176,13 +194,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 14,
     gap: 12,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: BORDER,
+    backgroundColor: THEME.surface,
+    borderRadius: RADIUS.lg,
   },
   skeletonBase: {
-    backgroundColor: "#F0F3EE",
+    backgroundColor: THEME.primaryTint,
     overflow: "hidden",
   },
   shimmerOverlay: {

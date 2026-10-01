@@ -147,16 +147,16 @@ const Notification = () => {
     const isSuccess = !isFailed && !isPending;
 
     const statusColor = isFailed
-      ? "#EF4444"
+      ? "#686868"
       : isPending
-        ? "#F59E0B"
-        : "#22C55E";
+        ? "#A6A6A6"
+        : "#9B9B9B";
     const iconName = isFailed
       ? "close-circle"
       : isPending
         ? "clock-outline"
         : "check-circle";
-    const iconBg = isFailed ? "#FEF2F2" : isPending ? "#FFFBEB" : "#F0FDF4";
+    const iconBg = isFailed ? "#F5F5F5" : isPending ? "#FBFBFB" : "#FAFAFA";
     const timeAgo = getTimeAgo(item.transaction_date || item.date);
     const fullDate = getFullDate(item.transaction_date || item.date);
     const label = item.service || item.label || "Transaction";
@@ -183,10 +183,10 @@ const Notification = () => {
 
         {/* Details */}
         <View style={styles.details}>
-          <Text variant="semibold" size="sm" color="#1A1A1E" numberOfLines={1}>
+          <Text variant="semibold" size="sm" color="#1A1A1A" numberOfLines={1}>
             {label}
           </Text>
-          <Text size="xs" color="#A0A0A8">
+          <Text size="xs" color="#A1A1A1">
             {fullDate}
           </Text>
         </View>
@@ -196,7 +196,7 @@ const Notification = () => {
           <Text variant="bold" size="sm" color={statusColor}>
             {formatAmount(item.amount)}
           </Text>
-          <Text size="xs" color="#B0B0B8" style={styles.timeAgo}>
+          <Text size="xs" color="#B1B1B1" style={styles.timeAgo}>
             {timeAgo}
           </Text>
         </View>
@@ -216,7 +216,7 @@ const Notification = () => {
         <Text
           size="xs"
           variant="semibold"
-          color="#B0B0B8"
+          color="#B1B1B1"
           style={styles.sectionLabel}
         >
           {item.title}
@@ -243,12 +243,12 @@ const Notification = () => {
           <MaterialCommunityIcons
             name="bell-off-outline"
             size={52}
-            color="rgba(108,43,217,0.15)"
+            color="rgba(69,69,69,0.15)"
           />
-          <Text variant="semibold" size="md" color="#9CA3AF">
+          <Text variant="semibold" size="md" color="#A2A2A2">
             No notifications yet
           </Text>
-          <Text size="sm" color="#C4C4CC" center>
+          <Text size="sm" color="#C5C5C5" center>
             Your transaction updates will appear here
           </Text>
         </View>
@@ -273,7 +273,7 @@ export default Notification;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
   },
 
   // ── List ──────────────────────────────────────
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   sectionLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#EBEBF0",
+    backgroundColor: "#EBEBEB",
   },
   sectionLabel: {
     letterSpacing: 0.5,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     gap: 12,
     borderWidth: 1,
-    borderColor: "#F2F2F5",
+    borderColor: "#F2F2F2",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -359,38 +359,38 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     gap: 12,
     borderWidth: 1,
-    borderColor: "#F2F2F5",
+    borderColor: "#F2F2F2",
   },
   skeletonIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
   },
   skeletonContent: { flex: 1, gap: 6 },
   skeletonLine: {
     width: "55%",
     height: 13,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
     borderRadius: 4,
   },
   skeletonLineShort: {
     width: "38%",
     height: 11,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     borderRadius: 4,
   },
   skeletonRight: { alignItems: "flex-end", gap: 6 },
   skeletonAmount: {
     width: 64,
     height: 13,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
     borderRadius: 4,
   },
   skeletonBadge: {
     width: 40,
     height: 11,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     borderRadius: 4,
   },
 

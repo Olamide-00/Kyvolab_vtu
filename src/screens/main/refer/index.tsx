@@ -14,13 +14,13 @@ import Text from "../../../components/common/txt";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const LIGHT_GREEN = "#EAF3E9";
-const ACCENT_GREEN = "#A9D99B";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#ECEFEA";
+const BRAND = "#111111";
+const BRAND_DEEP = "#0A0A0A";
+const LIGHT_GREEN = "#F0F0F0";
+const ACCENT_GREEN = "#CACACA";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#EEEEEE";
 
 if (
   Platform.OS === "android" &&
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   },
   historyDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "#F2F5F0",
+    borderBottomColor: "#F4F4F4",
   },
   historyAvatar: {
     width: 34,

@@ -102,7 +102,7 @@ const Success = () => {
           <Text
             size="xs"
             variant="semibold"
-            color={isSuccess ? "#16a34a" : "#dc2626"}
+            color={isSuccess ? "#7F7F7F" : "#4D4D4D"}
           >
             {isSuccess ? "Transaction Confirmed" : "Transaction Declined"}
           </Text>

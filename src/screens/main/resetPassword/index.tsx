@@ -43,7 +43,7 @@ const ResetPassword = () => {
                 <TextInput
                   style={styles.input}
                   placeholder="Enter New Password"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#A2A2A2"
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry={!showNewPassword}
@@ -55,7 +55,7 @@ const ResetPassword = () => {
                   <Ionicons
                     name={showNewPassword ? "eye-outline" : "eye-off-outline"}
                     size={20}
-                    color="#9CA3AF"
+                    color="#A2A2A2"
                   />
                 </TouchableOpacity>
               </View>
@@ -66,7 +66,7 @@ const ResetPassword = () => {
                   <Ionicons
                     name={hasMinLength ? "checkmark-circle" : "ellipse-outline"}
                     size={16}
-                    color={hasMinLength ? "#10B981" : "#9CA3AF"}
+                    color={hasMinLength ? "#919191" : "#A2A2A2"}
                   />
                   <Text
                     style={
@@ -83,7 +83,7 @@ const ResetPassword = () => {
                   <Ionicons
                     name={hasNumber ? "checkmark-circle" : "ellipse-outline"}
                     size={16}
-                    color={hasNumber ? "#10B981" : "#9CA3AF"}
+                    color={hasNumber ? "#919191" : "#A2A2A2"}
                   />
                   <Text
                     style={
@@ -100,7 +100,7 @@ const ResetPassword = () => {
                   <Ionicons
                     name={hasUppercase ? "checkmark-circle" : "ellipse-outline"}
                     size={16}
-                    color={hasUppercase ? "#10B981" : "#9CA3AF"}
+                    color={hasUppercase ? "#919191" : "#A2A2A2"}
                   />
                   <Text
                     style={
@@ -117,7 +117,7 @@ const ResetPassword = () => {
                   <Ionicons
                     name={hasLowercase ? "checkmark-circle" : "ellipse-outline"}
                     size={16}
-                    color={hasLowercase ? "#10B981" : "#9CA3AF"}
+                    color={hasLowercase ? "#919191" : "#A2A2A2"}
                   />
                   <Text
                     style={
@@ -139,7 +139,7 @@ const ResetPassword = () => {
                 <TextInput
                   style={styles.input}
                   placeholder="Re-Enter New Password"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#A2A2A2"
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showConfirmPassword}
@@ -153,7 +153,7 @@ const ResetPassword = () => {
                       showConfirmPassword ? "eye-outline" : "eye-off-outline"
                     }
                     size={20}
-                    color="#9CA3AF"
+                    color="#A2A2A2"
                   />
                 </TouchableOpacity>
               </View>

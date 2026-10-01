@@ -68,7 +68,7 @@ export const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: "#FF6B6B",
+    color: "#8A8A8A",
     fontWeight: "500",
   },
   loginButton: {

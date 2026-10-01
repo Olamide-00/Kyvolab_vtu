@@ -2,15 +2,14 @@ import React from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Text from "../../../../components/common/txt";
-
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
+import { FONTS, THEME } from "../../../../theme";
 
 interface ProfileMenuItemProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
+  /** Short status shown on the right, e.g. "Linked" or "24" */
+  value?: string;
   onPress: () => void;
   showChevron?: boolean;
   /** For destructive rows like logout */
@@ -23,34 +22,50 @@ const ProfileMenuItem: React.FC<ProfileMenuItemProps> = ({
   icon,
   title,
   subtitle,
+  value,
   onPress,
   showChevron = true,
   danger = false,
   isLast = false,
 }) => {
-  const tint = danger ? "#D92D20" : BRAND;
-  const bg = danger ? "#FEF0EF" : LIGHT_GREEN;
-
   return (
     <TouchableOpacity
-      style={[styles.menuItem, !isLast && styles.withDivider]}
+      style={styles.menuItem}
       onPress={onPress}
       activeOpacity={0.65}
     >
-      <View style={[styles.iconContainer, { backgroundColor: bg }]}>
-        <Ionicons name={icon} size={18} color={tint} />
+      <View style={[styles.iconContainer, danger && styles.iconDanger]}>
+        <Ionicons
+          name={icon}
+          size={18}
+          color={danger ? THEME.onPrimary : THEME.text}
+        />
       </View>
 
-      <View style={styles.textBlock}>
-        <Text style={[styles.menuText, danger && { color: "#D92D20" }]}>
-          {title}
-        </Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-      </View>
+      <View style={[styles.body, !isLast && styles.withDivider]}>
+        <View style={styles.textBlock}>
+          <Text style={styles.menuText}>{title}</Text>
+          {subtitle ? (
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
 
-      {showChevron && (
-        <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
-      )}
+        {value ? (
+          <Text style={styles.value} numberOfLines={1}>
+            {value}
+          </Text>
+        ) : null}
+
+        {showChevron && (
+          <Ionicons
+            name="chevron-forward"
+            size={16}
+            color={THEME.primaryMuted}
+          />
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -60,32 +75,51 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-  },
-  withDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#F2F5F0",
+    paddingLeft: 14,
   },
   iconContainer: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: THEME.primarySoft,
     alignItems: "center",
     justifyContent: "center",
   },
+  iconDanger: {
+    backgroundColor: THEME.primaryDeep,
+  },
+  // Divider starts after the icon, iOS-settings style
+  body: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 15,
+    paddingRight: 14,
+  },
+  withDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.border,
+  },
   textBlock: {
     flex: 1,
-    gap: 1,
+    gap: 2,
   },
   menuText: {
     fontSize: 15,
-    color: INK,
-    fontWeight: "500",
+    fontFamily: FONTS.semibold,
+    color: THEME.text,
   },
   subtitle: {
-    fontSize: 12,
-    color: "#8A9086",
+    fontSize: 12.5,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+  },
+  value: {
+    maxWidth: 120,
+    fontSize: 13.5,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
   },
 });
 

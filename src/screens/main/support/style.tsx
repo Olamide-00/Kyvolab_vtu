@@ -8,7 +8,7 @@ import { COLORS } from "../../../constants/Colors";
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
   },
   header: {
     paddingTop: hp("6%"),
@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
   },
   chatBotMessage: {
     fontSize: 13,
-    color: "#F3E8FF",
+    color: "#ECECEC",
   },
   scrollView: {
     flex: 1,
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     paddingHorizontal: wp("4%"),
     marginBottom: hp("3%"),
   },
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: hp("1.5%"),
     fontSize: 15,
-    color: "#1F2937",
+    color: "#282828",
   },
   faqSection: {
     marginBottom: hp("3%"),
@@ -101,7 +101,7 @@ export const styles = StyleSheet.create({
   faqTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
   },
   seeAll: {
     fontSize: 14,
@@ -112,12 +112,12 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     overflow: "hidden",
   },
   faqItem: {
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: "#F4F4F4",
   },
   faqQuestion: {
     flexDirection: "row",
@@ -130,7 +130,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: "500",
-    color: "#1F2937",
+    color: "#282828",
   },
   faqAnswer: {
     paddingHorizontal: wp("4%"),
@@ -139,7 +139,7 @@ export const styles = StyleSheet.create({
   },
   faqAnswerText: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 20,
   },
   contactSection: {
@@ -148,7 +148,7 @@ export const styles = StyleSheet.create({
   contactTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     marginBottom: hp("1.5%"),
   },
   contactButtons: {
@@ -160,7 +160,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     paddingVertical: hp("1.5%"),
     alignItems: "center",
     justifyContent: "center",
@@ -169,7 +169,7 @@ export const styles = StyleSheet.create({
   contactButtonText: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#1F2937",
+    color: "#282828",
     textAlign: "center",
   },
   actionButtons: {
@@ -182,7 +182,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#10B981",
+    borderColor: "#919191",
     paddingVertical: hp("1.5%"),
     alignItems: "center",
     justifyContent: "center",
@@ -191,7 +191,7 @@ export const styles = StyleSheet.create({
   communityButtonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#10B981",
+    color: "#919191",
   },
   rateButton: {
     flex: 1,
@@ -199,7 +199,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#F59E0B",
+    borderColor: "#A6A6A6",
     paddingVertical: hp("1.5%"),
     alignItems: "center",
     justifyContent: "center",
@@ -208,6 +208,6 @@ export const styles = StyleSheet.create({
   rateButtonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#F59E0B",
+    color: "#A6A6A6",
   },
 });

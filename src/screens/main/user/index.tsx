@@ -1,211 +1,176 @@
-import { View, Animated, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useRef } from "react";
+import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import ProfileInfoItem from "./component/item";
-import Text from "../../../components/common/txt";
-import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import Text from "../../../components/common/txt";
+import CommonHeader from "../../../components/ui/commonHeader";
 import useAuthStore from "../../../store/userStore";
+import { FONTS, RADIUS, THEME } from "../../../theme";
 
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const ACCENT_GREEN = "#A9D99B";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const SCREEN_BG = "#F7F9F6";
-const BORDER = "#ECEFEA";
-const AMBER = "#E8862E";
-const ERROR_RED = "#D92D20";
+type IconName = keyof typeof Ionicons.glyphMap;
 
-const BANNER_HEIGHT = 96;
+const AVATAR = 92;
 
 const User = () => {
   const navigation = useNavigation<any>();
-  const insets = useSafeAreaInsets();
   const userData = useAuthStore((state: any) => state.userData);
-
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const displayName = userData?.fullName || userData?.name || "User";
   const initial = displayName.charAt(0).toUpperCase();
+  const isVerified = !!userData?.isWalletCreated;
 
-  const kycStatus: "verified" | "unverified" = userData?.isWalletCreated
-    ? "verified"
-    : "unverified";
-
-  const kycConfig = {
-    verified: {
-      label: "Verified",
-      icon: "checkmark-circle" as const,
-      tint: BRAND,
-    },
-    unverified: {
-      label: "Unverified",
-      icon: "alert-circle-outline" as const,
-      tint: ERROR_RED,
-    },
-  }[kycStatus];
-
-  // Subtle parallax on the banner — the cover moves slower than the scroll,
-  // a restrained effect rather than a dramatic collapse
-  const bannerTranslate = scrollY.interpolate({
-    inputRange: [-100, 0, 100],
-    outputRange: [-30, 0, 40],
-    extrapolate: "clamp",
-  });
-
-  const bannerScale = scrollY.interpolate({
-    inputRange: [-100, 0],
-    outputRange: [1.3, 1],
-    extrapolateRight: "clamp",
-  });
-
-  const handleBack = () => navigation.goBack();
   const handleEdit = () => navigation.navigate("EditUser");
+
+  const details: { icon: IconName; label: string; value?: string }[] = [
+    { icon: "person-outline", label: "Full name", value: displayName },
+    { icon: "at-outline", label: "Username", value: userData?.tag },
+    { icon: "mail-outline", label: "Email address", value: userData?.email },
+    {
+      icon: "call-outline",
+      label: "Phone number",
+      value: userData?.phoneNumber,
+    },
+    {
+      icon: "calendar-outline",
+      label: "Date of birth",
+      value: userData?.dateOfBirth
+        ? new Date(userData.dateOfBirth).toLocaleDateString("en-NG", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        : undefined,
+    },
+    {
+      icon: "male-female-outline",
+      label: "Gender",
+      value: userData?.gender
+        ? userData.gender.charAt(0).toUpperCase() +
+          userData.gender.slice(1).replace(/_/g, " ")
+        : undefined,
+    },
+  ];
+
+  const missing = details.filter((d) => !d.value).length;
 
   return (
     <View style={styles.root}>
-      {/* NAV BAR — floats above the banner, always visible */}
-      <View style={[styles.navBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          onPress={handleBack}
-          hitSlop={8}
-          style={styles.navButton}
-        >
-          <Ionicons name="chevron-back" size={20} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Profile</Text>
-        <TouchableOpacity onPress={handleEdit} hitSlop={8}>
-          <Text style={styles.editButton}>Edit</Text>
-        </TouchableOpacity>
-      </View>
+      <CommonHeader
+        title="My details"
+        back
+        right={
+          <TouchableOpacity
+            onPress={handleEdit}
+            hitSlop={8}
+            style={styles.headerEdit}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="pencil" size={16} color={THEME.text} />
+          </TouchableOpacity>
+        }
+      />
 
-      {/* BANNER */}
-      <View style={styles.bannerClip}>
-        <Animated.View
-          style={[
-            styles.banner,
-            {
-              height: BANNER_HEIGHT + insets.top + 40,
-              transform: [
-                { translateY: bannerTranslate },
-                { scale: bannerScale },
-              ],
-            },
-          ]}
-        >
-          {/* faint diagonal texture instead of a glow blob */}
-          <View style={styles.bannerStripe} />
-          <View style={[styles.bannerStripe, styles.bannerStripe2]} />
-        </Animated.View>
-      </View>
-
-      <Animated.ScrollView
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: BANNER_HEIGHT + insets.top - 36 },
-        ]}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
+        contentContainerStyle={styles.scrollContent}
       >
-        {/* IDENTITY ROW — avatar overlaps the banner's bottom edge */}
-        <View style={styles.identityRow}>
+        {/* ── Identity ── */}
+        <View style={styles.identity}>
           {userData?.profilePicture ? (
             <Image
               source={{ uri: userData.profilePicture }}
-              style={styles.avatarImage}
+              style={styles.avatar}
               contentFit="cover"
             />
           ) : (
-            <View style={styles.avatarFallback}>
-              <Text variant="bold" size="lg" color={ACCENT_GREEN}>
-                {initial}
-              </Text>
+            <View style={[styles.avatar, styles.avatarFallback]}>
+              <Text style={styles.avatarInitial}>{initial}</Text>
             </View>
           )}
+          <Text style={styles.name} numberOfLines={1}>
+            {displayName}
+          </Text>
+          <Text style={styles.email} numberOfLines={1}>
+            {userData?.tag ? `@${userData.tag}` : userData?.email || ""}
+          </Text>
+        </View>
 
-          <View style={styles.identityText}>
-            <View style={styles.nameRow}>
-              <Text style={styles.name} numberOfLines={1}>
-                {displayName}
-              </Text>
-              <View
-                style={[
-                  styles.kycChip,
-                  { backgroundColor: `${kycConfig.tint}14` },
-                ]}
-              >
-                <Ionicons
-                  name={kycConfig.icon}
-                  size={11}
-                  color={kycConfig.tint}
-                />
-                <Text style={[styles.kycChipText, { color: kycConfig.tint }]}>
-                  {kycConfig.label}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.email} numberOfLines={1}>
-              {userData?.email || "---"}
+        {/* ── Status ── */}
+        <TouchableOpacity
+          style={styles.statusCard}
+          activeOpacity={isVerified ? 1 : 0.8}
+          disabled={isVerified}
+          onPress={() => navigation.navigate("Wallet")}
+        >
+          <View style={[styles.statusIcon, isVerified && styles.statusIconOn]}>
+            <Ionicons
+              name={isVerified ? "shield-checkmark" : "shield-outline"}
+              size={18}
+              color={isVerified ? THEME.onPrimary : THEME.text}
+            />
+          </View>
+          <View style={styles.statusText}>
+            <Text style={styles.statusTitle}>
+              {isVerified ? "Verified account" : "Not verified yet"}
+            </Text>
+            <Text style={styles.statusBody}>
+              {isVerified
+                ? "Full access to payments and transfers."
+                : "Create your account number to verify."}
             </Text>
           </View>
+          {!isVerified && (
+            <Ionicons
+              name="chevron-forward"
+              size={18}
+              color={THEME.textSecondary}
+            />
+          )}
+        </TouchableOpacity>
+
+        {/* ── Details ── */}
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Personal information</Text>
+          {missing > 0 ? (
+            <Text style={styles.sectionHint}>{missing} missing</Text>
+          ) : null}
+        </View>
+        <View style={styles.group}>
+          {details.map((d, i) => (
+            <View key={d.label} style={styles.row}>
+              <View style={styles.rowIcon}>
+                <Ionicons name={d.icon} size={17} color={THEME.text} />
+              </View>
+              <View
+                style={[
+                  styles.rowBody,
+                  i < details.length - 1 && styles.rowDivider,
+                ]}
+              >
+                <Text style={styles.rowLabel}>{d.label}</Text>
+                {d.value ? (
+                  <Text style={styles.rowValue} numberOfLines={1}>
+                    {d.value}
+                  </Text>
+                ) : (
+                  <Text style={styles.rowAdd} onPress={handleEdit}>
+                    Add
+                  </Text>
+                )}
+              </View>
+            </View>
+          ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Personal details</Text>
-        <View style={styles.card}>
-          <ProfileInfoItem
-            icon="person-outline"
-            label="Full Name"
-            value={displayName}
-          />
-          <ProfileInfoItem
-            icon="mail-outline"
-            label="Email Address"
-            value={userData?.email || "---"}
-          />
-          <ProfileInfoItem
-            icon="call-outline"
-            label="Phone Number"
-            value={userData?.phoneNumber || "---"}
-          />
-          <ProfileInfoItem
-            icon="calendar-outline"
-            label="Date of Birth"
-            value={
-              userData?.dateOfBirth
-                ? new Date(userData.dateOfBirth).toLocaleDateString("en-NG")
-                : "---"
-            }
-          />
-          <ProfileInfoItem
-            icon="male-female-outline"
-            label="Gender"
-            value={
-              userData?.gender
-                ? userData.gender.charAt(0).toUpperCase() +
-                  userData.gender.slice(1)
-                : "---"
-            }
-            isLast
-          />
-        </View>
-
-        <Text style={styles.sectionTitle}>Verification</Text>
-        <View style={styles.card}>
-          <ProfileInfoItem
-            icon={kycConfig.icon}
-            label="KYC Status"
-            value={kycConfig.label}
-            tint={kycConfig.tint}
-            isLast
-          />
-        </View>
-      </Animated.ScrollView>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={handleEdit}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.editButtonText}>Edit details</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -215,148 +180,174 @@ export default User;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: SCREEN_BG,
+    backgroundColor: THEME.bg,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 40,
+  },
+  headerEdit: {
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.md,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
-  // ── Nav bar ───────────────────────────────────
-  navBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20,
+  // ── Identity ──────────────────────────────────
+  identity: {
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  avatar: {
+    width: AVATAR,
+    height: AVATAR,
+    borderRadius: AVATAR / 2,
+    marginBottom: 12,
+  },
+  avatarFallback: {
+    backgroundColor: THEME.accent,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarInitial: {
+    fontSize: 36,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+  },
+  name: {
+    fontSize: 22,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+    letterSpacing: -0.4,
+  },
+  email: {
+    marginTop: 2,
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+  },
+
+  // ── Status ────────────────────────────────────
+  statusCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.accent,
+  },
+  statusIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: THEME.surface,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusIconOn: {
+    backgroundColor: THEME.primaryDeep,
+  },
+  statusText: {
+    flex: 1,
+    gap: 2,
+  },
+  statusTitle: {
+    fontSize: 15,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+  },
+  statusBody: {
+    fontSize: 12.5,
+    fontFamily: FONTS.regular,
+    color: THEME.textSecondary,
+  },
+
+  // ── Details ───────────────────────────────────
+  sectionRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-  },
-  navButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(0,0,0,0.18)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navTitle: {
-    fontSize: 14.5,
-    fontFamily: "Poppins-SemiBold",
-    color: "#FFFFFF",
-  },
-  editButton: {
-    fontSize: 13.5,
-    fontFamily: "Poppins-SemiBold",
-    color: "#FFFFFF",
-  },
-
-  // ── Banner ────────────────────────────────────
-  bannerClip: {
-    height: BANNER_HEIGHT,
-    overflow: "hidden",
-  },
-  banner: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: BRAND,
-    overflow: "hidden",
-  },
-  bannerStripe: {
-    position: "absolute",
-    width: "70%",
-    height: 220,
-    backgroundColor: BRAND_DEEP,
-    opacity: 0.4,
-    transform: [{ rotate: "-18deg" }],
-    top: -60,
-    left: -40,
-  },
-  bannerStripe2: {
-    left: undefined,
-    right: -60,
-    top: -20,
-    opacity: 0.25,
-  },
-
-  // ── Identity row ──────────────────────────────
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-  },
-  identityRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    marginBottom: 24,
-  },
-  avatarImage: {
-    width: 68,
-    height: 68,
-    borderRadius: 18,
-    borderWidth: 3,
-    borderColor: "#FFFFFF",
-  },
-  avatarFallback: {
-    width: 68,
-    height: 68,
-    borderRadius: 18,
-    backgroundColor: BRAND,
-    borderWidth: 3,
-    borderColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  identityText: {
-    flex: 1,
-    marginLeft: 12,
-    marginBottom: 4,
-  },
-  nameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  name: {
-    fontSize: 17,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
-    flexShrink: 1,
-  },
-  email: {
-    fontSize: 12.5,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    marginTop: 2,
-  },
-  kycChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
-  },
-  kycChipText: {
-    fontSize: 10,
-    fontFamily: "Poppins-SemiBold",
-  },
-
-  // ── Body ──────────────────────────────────────
-  sectionTitle: {
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
-    color: MUTED,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
+    marginTop: 24,
     marginBottom: 8,
-    marginLeft: 4,
+    marginHorizontal: 4,
   },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    marginBottom: 20,
+  sectionTitle: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bold,
+    color: THEME.textMuted,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  sectionHint: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+  },
+  group: {
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.surface,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: THEME.border,
+    overflow: "hidden",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingLeft: 14,
+  },
+  rowIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: THEME.primarySoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rowBody: {
+    flex: 1,
+    gap: 2,
+    paddingVertical: 13,
+    paddingRight: 14,
+  },
+  rowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.border,
+  },
+  rowLabel: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+  },
+  rowValue: {
+    fontSize: 15,
+    fontFamily: FONTS.semibold,
+    color: THEME.text,
+  },
+  rowAdd: {
+    alignSelf: "flex-start",
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+    textDecorationLine: "underline",
+  },
+
+  editButton: {
+    height: 54,
+    marginTop: 20,
+    borderRadius: RADIUS.pill,
+    backgroundColor: THEME.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editButtonText: {
+    fontSize: 16,
+    fontFamily: FONTS.bold,
+    color: THEME.onPrimary,
   },
 });

@@ -1,37 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import BottomSheetSelector from "../../../../components/common/bottomsheet";
+import React, { useState, useEffect, useMemo } from "react";
 import PhoneInputWithContact from "../../../../components/common/numberSelector";
 import { useNavigation } from "@react-navigation/native";
 import {
   useGetAllServices,
   useGetServicePLan,
 } from "../../../../api/hooks/useBills";
-import Text from "../../../../components/common/txt";
-
-const BRAND = "#1B3710";
-const INK = "#141613";
-const ERROR_RED = "#D92D20";
+import {
+  PayScreen,
+  PlanOption,
+  PlanPicker,
+  ProviderOption,
+  ProviderPicker,
+  Step,
+} from "../../../../components/pay";
 
 interface DataTabProps {
+  /** Airtime/Data toggle, rendered under the header */
+  top?: React.ReactNode;
   /** Network hint from the Services screen, e.g. "mtn" */
   preselectedNetwork?: string;
 }
 
-const DataTab = ({ preselectedNetwork }: DataTabProps) => {
+const DataTab = ({ top, preselectedNetwork }: DataTabProps) => {
   const navigation = useNavigation<any>();
   const { data, isLoading } = useGetAllServices("data");
 
   const [selectedNetwork, setSelectedNetwork] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedDataPlan, setSelectedDataPlan] = useState("");
-  const [networks, setNetworks] = useState<any[]>([]);
-  const [dataPlans, setDataPlans] = useState<any[]>([]);
-  const [errors, setErrors] = useState({
-    phone: "",
-    selectedNetwork: "",
-    selectedDataPlan: "",
-  });
+  const [networks, setNetworks] = useState<ProviderOption[]>([]);
 
   // Build network options from API
   useEffect(() => {
@@ -67,22 +64,20 @@ const DataTab = ({ preselectedNetwork }: DataTabProps) => {
   const { data: dataPackage, isLoading: dataPackageLoading } =
     useGetServicePLan(selectedNetwork);
 
-  // Build data plan options from API
-  useEffect(() => {
-    if (dataPackage?.data?.content?.variations) {
-      const plans = dataPackage.data.content.variations.map((plan: any) => ({
-        label: plan.name,
+  const variations: any[] = dataPackage?.data?.content?.variations || [];
+
+  const planOptions: PlanOption[] = useMemo(
+    () =>
+      variations.map((plan: any) => ({
         value: plan.variation_code,
-        icon: undefined,
-      }));
-      setDataPlans(plans);
-    } else {
-      setDataPlans([]);
-    }
-  }, [dataPackage]);
+        title: plan.name,
+        price: plan.variation_amount,
+      })),
+    [dataPackage],
+  );
 
   // Find selected plan details for navigation
-  const selectedPlanObject = dataPackage?.data?.content?.variations?.find(
+  const selectedPlanObject = variations.find(
     (plan: any) => plan.variation_code === selectedDataPlan,
   );
 
@@ -96,120 +91,59 @@ const DataTab = ({ preselectedNetwork }: DataTabProps) => {
     });
   };
 
-  const disable =
-    !selectedNetwork || !phone || phone.length < 10 || !selectedDataPlan;
+  const phoneValid = phone.length >= 10;
+  const disable = !selectedNetwork || !phoneValid || !selectedDataPlan;
 
   return (
-    <View style={styles.tabContent}>
-      {/* Network Selector */}
-      <View style={styles.selectorContainer}>
-        <BottomSheetSelector
-          icon="wifi"
+    <PayScreen
+      title="Airtime & Data"
+      top={top}
+      totalLabel={selectedPlanObject ? "Plan price" : "Total"}
+      total={selectedPlanObject?.variation_amount}
+      disabled={disable}
+      onContinue={handleContinue}
+    >
+      <Step index={1} title="Network" done={!!selectedNetwork}>
+        <ProviderPicker
           options={networks}
-          selectedValue={selectedNetwork}
-          onSelect={(value: string) => {
+          value={selectedNetwork}
+          onChange={(value) => {
             setSelectedNetwork(value);
             setSelectedDataPlan(""); // reset plan on network change
-            setErrors((prev) => ({ ...prev, selectedNetwork: "" }));
           }}
-          placeholder={isLoading ? "Loading networks..." : "Change Network"}
-          sheetTitle="Select Network"
+          loading={isLoading}
         />
-        {errors.selectedNetwork ? (
-          <Text style={styles.errorText}>{errors.selectedNetwork}</Text>
-        ) : null}
-      </View>
+      </Step>
 
-      {/* Phone Number Input */}
-      <View style={styles.inputContainer}>
+      <Step index={2} title="Phone number" done={phoneValid}>
         <PhoneInputWithContact
-          label="Phone Number"
           value={phone}
-          onChangeText={(text: string) => {
-            setPhone(text);
-            setErrors((prev) => ({ ...prev, phone: "" }));
-          }}
-          placeholder="Enter phone number"
+          onChangeText={setPhone}
+          placeholder="0801 234 5678"
         />
-      </View>
+      </Step>
 
-      {/* Data Plan Selector */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Data Plan</Text>
-        <BottomSheetSelector
-          options={dataPlans}
-          selectedValue={selectedDataPlan}
-          onSelect={(value: string) => {
-            setSelectedDataPlan(value);
-            setErrors((prev) => ({ ...prev, selectedDataPlan: "" }));
-          }}
-          placeholder={
-            !selectedNetwork
-              ? "Select a network first"
-              : dataPackageLoading
-                ? "Loading plans..."
-                : dataPlans.length === 0
-                  ? "No plans available"
-                  : "Select Data Plan"
-          }
-          sheetTitle="Select Data Plan"
-          variant="field"
-        />
-        {errors.selectedDataPlan ? (
-          <Text style={styles.errorText}>{errors.selectedDataPlan}</Text>
-        ) : null}
-      </View>
-
-      {/* Continue Button */}
-      <TouchableOpacity
-        style={[styles.continueButton, disable && styles.disabledButton]}
-        onPress={handleContinue}
-        disabled={disable}
+      <Step
+        index={3}
+        title="Data plan"
+        done={!!selectedDataPlan}
+        hint={planOptions.length ? `${planOptions.length} plans` : undefined}
       >
-        <Text style={styles.continueButtonText}>Continue</Text>
-      </TouchableOpacity>
-    </View>
+        <PlanPicker
+          options={planOptions}
+          value={selectedDataPlan}
+          onChange={setSelectedDataPlan}
+          columns={2}
+          loading={!!selectedNetwork && dataPackageLoading}
+          emptyText={
+            selectedNetwork
+              ? "No plans available for this network"
+              : "Pick a network to see its plans"
+          }
+        />
+      </Step>
+    </PayScreen>
   );
 };
 
 export default DataTab;
-
-const styles = StyleSheet.create({
-  tabContent: {
-    padding: 16,
-  },
-  selectorContainer: {
-    marginTop: 8,
-  },
-  inputContainer: {
-    marginTop: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: "Poppins-Medium",
-    color: INK,
-    marginBottom: 8,
-  },
-  errorText: {
-    fontSize: 12.5,
-    fontFamily: "Poppins-Regular",
-    color: ERROR_RED,
-    marginTop: 6,
-  },
-  continueButton: {
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: BRAND,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 32,
-  },
-  disabledButton: {
-    opacity: 0.35,
-  },
-  continueButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15.5,
-    fontFamily: "Poppins-SemiBold",
-  },
-});

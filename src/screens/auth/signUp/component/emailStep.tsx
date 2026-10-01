@@ -122,13 +122,13 @@ const SignUpEmail = () => {
               <MaterialCommunityIcons name="apple" size={28} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <MaterialCommunityIcons name="google" size={28} color="#DB4437" />
+              <MaterialCommunityIcons name="google" size={28} color="#636363" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
               <MaterialCommunityIcons
                 name="facebook"
                 size={28}
-                color="#1877F2"
+                color="#6C6C6C"
               />
             </TouchableOpacity>
           </View>

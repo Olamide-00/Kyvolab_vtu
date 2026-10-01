@@ -16,14 +16,14 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthStore, { selectUserData } from "../../../store/userStore";
 
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const LIGHT_GREEN = "#EAF3E9";
-const ACCENT_GREEN = "#A9D99B";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E8ECE6";
-const SCREEN_BG = "#F7F9F6";
+const BRAND = "#111111";
+const BRAND_DEEP = "#0A0A0A";
+const LIGHT_GREEN = "#F0F0F0";
+const ACCENT_GREEN = "#CACACA";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#EBEBEB";
+const SCREEN_BG = "#F8F8F8";
 
 if (
   Platform.OS === "android" &&
@@ -146,7 +146,7 @@ const Support = () => {
           <TextInput
             style={styles.searchInput}
             placeholder="Search for answers"
-            placeholderTextColor="#A8AFA5"
+            placeholderTextColor="#ADADAD"
             value={searchQuery}
             onChangeText={setSearchQuery}
             onFocus={() => setSearchFocused(true)}
@@ -155,7 +155,7 @@ const Support = () => {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery("")} hitSlop={8}>
-              <Ionicons name="close-circle" size={18} color="#C2C9BE" />
+              <Ionicons name="close-circle" size={18} color="#C7C7C7" />
             </TouchableOpacity>
           )}
         </View>
@@ -179,7 +179,7 @@ const Support = () => {
 
         {filteredFaqs.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="search-outline" size={28} color="#C2C9BE" />
+            <Ionicons name="search-outline" size={28} color="#C7C7C7" />
             <Text style={styles.emptyText}>
               No answers found for "{searchQuery}"
             </Text>
@@ -255,7 +255,7 @@ const Support = () => {
                 <Text style={styles.contactLabel}>{option.label}</Text>
                 <Text style={styles.contactSub}>{option.sub}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
+              <Ionicons name="chevron-forward" size={18} color="#C7C7C7" />
             </TouchableOpacity>
           ))}
         </View>
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   faqItem: {},
   faqDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "#F2F5F0",
+    borderBottomColor: "#F4F4F4",
   },
   faqQuestion: {
     flexDirection: "row",
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   },
   communitySub: {
     fontSize: 12.5,
-    color: "rgba(18,40,8,0.75)",
+    color: "rgba(33,33,33,0.75)",
     lineHeight: 18,
   },
   communityArrow: {

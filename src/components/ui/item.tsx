@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import React from "react";
 import Text from "../common/txt";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
+import { RADIUS, THEME } from "../../theme";
 import { useNavigation } from "@react-navigation/native";
 import { getCategoryIcon } from "../../utils/transactionHistory";
 
@@ -37,7 +37,7 @@ const Item = ({ data }: any) => {
       maximumFractionDigits: 2,
     },
   )}`;
-  const amountColor = isDebit ? "#EF4444" : "#22C55E";
+  const amountColor = isDebit ? THEME.text : THEME.success;
 
   const status = typeof data.status === "string" ? data.status : "pending";
   const isSuccess = status === "success";
@@ -59,21 +59,24 @@ const Item = ({ data }: any) => {
     >
       {/* Icon */}
       <View
-        style={[styles.iconContainer, { backgroundColor: `${COLORS.brand}18` }]}
+        style={[
+          styles.iconContainer,
+          isDebit ? styles.iconDebit : styles.iconCredit,
+        ]}
       >
         <MaterialCommunityIcons
           name={getCategoryIcon(category) as any}
           size={20}
-          color={COLORS.white}
+          color={isDebit ? THEME.primary : THEME.onPrimary}
         />
       </View>
 
       {/* Middle — label + date */}
       <View style={styles.middle}>
-        <Text variant="semibold" size="md" color="#1A1A1E">
+        <Text variant="semibold" size="md" color={THEME.text}>
           {label}
         </Text>
-        <Text variant="regular" size="xs" color="#A0A0A8">
+        <Text variant="regular" size="sm" color={THEME.textMuted}>
           {displayDate}
         </Text>
       </View>
@@ -98,7 +101,7 @@ const Item = ({ data }: any) => {
           <Text
             variant="semibold"
             size="xs"
-            color={isSuccess ? "#16A34A" : "#DC2626"}
+            color={isSuccess ? THEME.success : THEME.error}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </Text>
@@ -115,17 +118,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.surface,
     paddingVertical: 14,
     paddingHorizontal: 14,
-    borderRadius: 14,
+    borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: "#F2F2F5",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    borderColor: THEME.border,
   },
   pressed: {
     opacity: 0.7,
@@ -140,6 +138,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
+  },
+  iconDebit: {
+    backgroundColor: THEME.primarySoft,
+  },
+  iconCredit: {
+    backgroundColor: THEME.primary,
   },
 
   // ── Middle ────────────────────────────────────
@@ -163,14 +167,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   badgeSuccess: {
-    backgroundColor: "#F0FDF4",
-    borderWidth: 1,
-    borderColor: "#BBF7D0",
+    backgroundColor: THEME.successSoft,
   },
   badgeFailed: {
-    backgroundColor: "#FEF2F2",
-    borderWidth: 1,
-    borderColor: "#FECACA",
+    backgroundColor: THEME.errorSoft,
   },
   statusDot: {
     width: 5,
@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   dotSuccess: {
-    backgroundColor: "#22C55E",
+    backgroundColor: THEME.success,
   },
   dotFailed: {
-    backgroundColor: "#EF4444",
+    backgroundColor: THEME.error,
   },
 });

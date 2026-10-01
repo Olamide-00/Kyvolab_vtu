@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { Text, TextProps } from "./txt";
-import { COLORS } from "../../constants/Colors";
+import { RADIUS, SHADOW, THEME } from "../../theme";
 
 export type BtnVariant = "primary" | "secondary" | "outline" | "ghost";
 export type BtnSize = "sm" | "md" | "lg" | "xl";
@@ -78,21 +78,18 @@ export const Btn: React.FC<BtnProps> = ({
     switch (variant) {
       case "primary":
         return {
-          backgroundColor: isDisabled ? COLORS.disabled : COLORS.bg,
-          borderWidth: 2,
-          borderColor: COLORS.yellow,
+          backgroundColor: THEME.primary,
+          ...(isDisabled ? {} : SHADOW.card),
         };
       case "secondary":
         return {
-          backgroundColor: isDisabled ? COLORS.disabled : COLORS.secondary,
-          borderWidth: 2,
-          borderColor: COLORS.secondary,
+          backgroundColor: THEME.accent,
         };
       case "outline":
         return {
           backgroundColor: "transparent",
-          borderWidth: 2,
-          borderColor: isDisabled ? COLORS.disabled : COLORS.primary,
+          borderWidth: 1.5,
+          borderColor: THEME.primary,
         };
       case "ghost":
         return {
@@ -109,27 +106,27 @@ export const Btn: React.FC<BtnProps> = ({
     switch (size) {
       case "sm":
         return {
-          paddingVertical: 6,
-          paddingHorizontal: 12,
-          borderRadius: rounded ? 20 : 6,
+          paddingVertical: 8,
+          paddingHorizontal: 14,
+          borderRadius: rounded ? RADIUS.pill : RADIUS.sm,
         };
       case "md":
         return {
-          paddingVertical: 10,
+          paddingVertical: 14,
           paddingHorizontal: 20,
-          borderRadius: rounded ? 24 : 8,
+          borderRadius: rounded ? RADIUS.pill : RADIUS.lg,
         };
       case "lg":
         return {
-          paddingVertical: 14,
+          paddingVertical: 16,
           paddingHorizontal: 28,
-          borderRadius: rounded ? 28 : 10,
+          borderRadius: rounded ? RADIUS.pill : RADIUS.lg,
         };
       case "xl":
         return {
           paddingVertical: 18,
           paddingHorizontal: 36,
-          borderRadius: rounded ? 32 : 12,
+          borderRadius: rounded ? RADIUS.pill : RADIUS.lg,
         };
       default:
         return {};
@@ -138,21 +135,17 @@ export const Btn: React.FC<BtnProps> = ({
 
   // Get text color based on variant
   const getTextColor = (): string => {
-    if (isDisabled) {
-      return COLORS.textDisabled;
-    }
-
     switch (variant) {
       case "primary":
-        return COLORS.textPrimary;
+        return THEME.onPrimary;
       case "secondary":
-        return COLORS.textSecondary;
+        return THEME.primaryDarkest;
       case "outline":
-        return COLORS.primary;
+        return THEME.primary;
       case "ghost":
-        return COLORS.primary;
+        return THEME.primary;
       default:
-        return COLORS.textPrimary;
+        return THEME.onPrimary;
     }
   };
 
@@ -176,9 +169,9 @@ export const Btn: React.FC<BtnProps> = ({
   const getTextVariant = (): TextProps["variant"] => {
     switch (size) {
       case "sm":
-        return "regular";
+        return "semibold";
       case "md":
-        return "regular";
+        return "bold";
       case "lg":
         return "semibold";
       case "xl":
@@ -194,25 +187,14 @@ export const Btn: React.FC<BtnProps> = ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    opacity: isDisabled ? 0.6 : 1,
+    opacity: isDisabled ? 0.4 : 1,
     width: fullWidth ? "100%" : undefined,
   };
 
   // Determine loading color if not provided
   const getLoadingColor = () => {
     if (loadingColor) return loadingColor;
-    switch (variant) {
-      case "primary":
-        return COLORS.textPrimary;
-      case "secondary":
-        return COLORS.textSecondary;
-      case "outline":
-        return COLORS.primary;
-      case "ghost":
-        return COLORS.primary;
-      default:
-        return COLORS.textPrimary;
-    }
+    return getTextColor();
   };
 
   return (

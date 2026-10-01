@@ -2,28 +2,22 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
   ActivityIndicator,
   Animated,
   Easing,
 } from "react-native";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
+import { Ionicons } from "@expo/vector-icons";
 import Text from "../../../../components/common/txt";
 import TopUpModal from "./topupModal";
 import { io, Socket } from "socket.io-client";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import useAuthStore from "../../../../store/userStore";
 import { useGetBalance } from "../../../../api/hooks/useAuth";
+import { FONTS, RADIUS, THEME } from "../../../../theme";
 
 const SOCKET_URL = "https://api.depay.com.ng/";
 const POLL_INTERVAL_MS = 20000;
-
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const LIGHT_GREEN = "#DCEDD6";
-const ACCENT_GREEN = "#A9D99B";
 
 interface DashboardProps {
   refreshTick?: number;
@@ -65,36 +59,12 @@ const Dashboard = ({ refreshTick = 0 }: DashboardProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [currentBalance, setCurrentBalance] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const pressScale = useRef(new Animated.Value(1)).current;
-
   const userData = useAuthStore((state) => state.userData);
-  const isWalletCreated = useAuthStore((state) => state.isWalletCreated);
-
   const email = userData?.email || "";
-  const accountNumber = (userData as any)?.accountNumber || "—";
-  const bankName = (userData as any)?.bankName || "—";
-
-  const truncate = (str: string, max: number) =>
-    str?.length > max ? str.slice(0, max) + "…" : str;
-
-  const handleCopy = async (value: string) => {
-    await Clipboard.setStringAsync(value);
-    setCopied(true);
-    if (copyTimer.current) clearTimeout(copyTimer.current);
-    copyTimer.current = setTimeout(() => setCopied(false), 1800);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (copyTimer.current) clearTimeout(copyTimer.current);
-    };
-  }, []);
 
   const { balance, refetch, isLoading: balanceLoading } = useGetBalance(email);
 
@@ -172,164 +142,73 @@ const Dashboard = ({ refreshTick = 0 }: DashboardProps) => {
 
   const [whole, decimals] = formatCurrency(animatedBalance).split(".");
 
-  // ─── Press feedback on the card ────────────────────────────
-  const pressIn = () =>
-    Animated.spring(pressScale, {
-      toValue: 0.98,
-      useNativeDriver: true,
-      speed: 40,
-      bounciness: 0,
-    }).start();
-
-  const pressOut = () =>
-    Animated.spring(pressScale, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 6,
-    }).start();
+  const hidden = "••••••";
 
   return (
     <>
-      <View style={styles.stackWrap}>
-        {/* BACK CARD — light green, rotated, peeking out */}
-        <View style={styles.backCard} />
+      <View style={styles.wrap}>
+        {/* ── BALANCE ── */}
+        <View style={styles.labelRow}>
+          <View style={styles.statusPill}>
+            <View
+              style={[
+                styles.liveDot,
+                !isSocketConnected && styles.liveDotOffline,
+              ]}
+            />
+            <Text style={styles.label}>
+              {isSocketConnected ? "Live balance" : "Wallet balance"}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setBalanceVisible(!balanceVisible)}
+            activeOpacity={0.7}
+            hitSlop={10}
+            style={styles.eyeButton}
+          >
+            <Ionicons
+              name={balanceVisible ? "eye-off-outline" : "eye-outline"}
+              size={16}
+              color={THEME.text}
+            />
+          </TouchableOpacity>
+        </View>
 
-        {/* MAIN CARD */}
-        <Animated.View style={{ transform: [{ scale: pressScale }] }}>
-          <Pressable onPressIn={pressIn} onPressOut={pressOut}>
-            <View style={styles.card}>
-              {/* Decorative rings bleeding off the top-right corner */}
-              <View style={styles.ringOuter} pointerEvents="none" />
-              <View style={styles.ringInner} pointerEvents="none" />
+        <View style={styles.amountRow}>
+          {balanceLoading && currentBalance === null ? (
+            <ActivityIndicator size="small" color={THEME.text} />
+          ) : balanceVisible ? (
+            <>
+              <Text style={styles.currency}>₦</Text>
+              <Text style={styles.amountWhole}>{whole}</Text>
+              <Text style={styles.amountDecimals}>.{decimals}</Text>
+            </>
+          ) : (
+            <Text style={styles.amountWhole}>{hidden}</Text>
+          )}
+        </View>
 
-              {/* HEADER */}
-              <View style={styles.headerRow}>
-                <View style={styles.labelRow}>
-                  <View
-                    style={[
-                      styles.liveDot,
-                      !isSocketConnected && styles.liveDotOffline,
-                    ]}
-                  />
-                  <Text variant="light" color="rgba(255,255,255,0.7)" size="sm">
-                    Available balance
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => setBalanceVisible(!balanceVisible)}
-                  activeOpacity={0.7}
-                  hitSlop={10}
-                  style={styles.eyeButton}
-                >
-                  <MaterialCommunityIcons
-                    name={balanceVisible ? "eye-off-outline" : "eye-outline"}
-                    size={17}
-                    color="rgba(255,255,255,0.85)"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* BALANCE — oversized */}
-              <View style={styles.amountRow}>
-                {balanceLoading && currentBalance === null ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : balanceVisible ? (
-                  <>
-                    <Text
-                      variant="bold"
-                      color={ACCENT_GREEN}
-                      style={styles.currency}
-                    >
-                      ₦
-                    </Text>
-                    <Text
-                      variant="bold"
-                      color="#fff"
-                      style={styles.amountWhole}
-                    >
-                      {whole}
-                    </Text>
-                    <Text
-                      variant="bold"
-                      color="rgba(255,255,255,0.5)"
-                      style={styles.amountDecimals}
-                    >
-                      .{decimals}
-                    </Text>
-                  </>
-                ) : (
-                  <Text variant="bold" color="#fff" style={styles.amountWhole}>
-                    ••••••
-                  </Text>
-                )}
-              </View>
-
-              {/* FOOTER — account / create + Top Up */}
-              <View style={styles.footerRow}>
-                {isWalletCreated ? (
-                  <TouchableOpacity
-                    style={styles.accountChip}
-                    activeOpacity={0.75}
-                    onPress={() => handleCopy(accountNumber)}
-                  >
-                    <Text
-                      variant="light"
-                      color="rgba(255,255,255,0.6)"
-                      size="xs"
-                    >
-                      {truncate(bankName, 12)}
-                    </Text>
-                    <Text variant="semibold" color="#fff" size="sm">
-                      {accountNumber}
-                    </Text>
-                    <MaterialCommunityIcons
-                      name={copied ? "check" : "content-copy"}
-                      size={13}
-                      color={copied ? ACCENT_GREEN : "rgba(255,255,255,0.55)"}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.accountChip}
-                    onPress={() =>
-                      navigation.navigate("StackNav", { screen: "Wallet" })
-                    }
-                    activeOpacity={0.8}
-                  >
-                    <MaterialCommunityIcons
-                      name="plus-circle-outline"
-                      size={14}
-                      color={ACCENT_GREEN}
-                    />
-                    <Text
-                      variant="light"
-                      color="rgba(255,255,255,0.85)"
-                      size="xs"
-                    >
-                      Create account to receive money
-                    </Text>
-                  </TouchableOpacity>
-                )}
-
-                <TouchableOpacity
-                  style={styles.topUp}
-                  onPress={() => setModalVisible(true)}
-                  activeOpacity={0.85}
-                >
-                  <MaterialCommunityIcons
-                    name="plus"
-                    size={17}
-                    color={BRAND_DEEP}
-                  />
-                  <Text variant="semibold" color={BRAND_DEEP} size="sm">
-                    Top Up
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Pressable>
-        </Animated.View>
+        {/* ── ACTIONS ── */}
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={[styles.action, styles.actionPrimary]}
+            onPress={() => setModalVisible(true)}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="add" size={18} color={THEME.onPrimary} />
+            <Text style={[styles.actionText, styles.actionTextPrimary]}>
+              Add money
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.action}
+            onPress={() => navigation.navigate("StackNav", { screen: "Refer" })}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="gift-outline" size={17} color={THEME.text} />
+            <Text style={styles.actionText}>Refer & earn</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TopUpModal
@@ -343,57 +222,15 @@ const Dashboard = ({ refreshTick = 0 }: DashboardProps) => {
 export default Dashboard;
 
 const styles = StyleSheet.create({
-  stackWrap: {
-    // room for the back card to peek out
-    paddingBottom: 10,
+  wrap: {
+    paddingTop: 18,
   },
-  backCard: {
-    position: "absolute",
-    left: 14,
-    right: 14,
-    bottom: 0,
-    height: 60,
-    borderRadius: 22,
-    backgroundColor: LIGHT_GREEN,
-    transform: [{ rotate: "-1.6deg" }],
-  },
-  card: {
-    backgroundColor: BRAND,
-    borderRadius: 24,
-    padding: 20,
-    overflow: "hidden",
-    shadowColor: BRAND_DEEP,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 18,
-    elevation: 10,
-  },
-  ringOuter: {
-    position: "absolute",
-    top: -70,
-    right: -70,
-    width: 190,
-    height: 190,
-    borderRadius: 95,
-    borderWidth: 30,
-    borderColor: "rgba(169,217,155,0.09)",
-  },
-  ringInner: {
-    position: "absolute",
-    top: -30,
-    right: -30,
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    borderWidth: 22,
-    borderColor: "rgba(169,217,155,0.12)",
-  },
-  headerRow: {
+  labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  labelRow: {
+  statusPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
@@ -402,71 +239,77 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: ACCENT_GREEN,
+    backgroundColor: THEME.text,
   },
   liveDotOffline: {
-    backgroundColor: "rgba(255,255,255,0.3)",
+    backgroundColor: THEME.textMuted,
+  },
+  label: {
+    fontSize: 13.5,
+    fontFamily: FONTS.semibold,
+    color: THEME.textSecondary,
   },
   eyeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(255,255,255,0.7)",
     alignItems: "center",
     justifyContent: "center",
   },
   amountRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    marginTop: 16,
+    marginTop: 6,
     marginBottom: 20,
-    minHeight: 52,
+    minHeight: 56,
   },
   currency: {
     fontSize: 24,
-    lineHeight: 40,
+    lineHeight: 44,
     marginRight: 4,
+    fontFamily: FONTS.bold,
+    color: THEME.textSecondary,
   },
   amountWhole: {
     fontSize: 44,
-    lineHeight: 52,
+    lineHeight: 54,
     letterSpacing: -1.5,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
   },
   amountDecimals: {
     fontSize: 22,
-    lineHeight: 40,
+    lineHeight: 44,
+    fontFamily: FONTS.bold,
+    color: THEME.textMuted,
   },
-  footerRow: {
+
+  actions: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     gap: 10,
   },
-  accountChip: {
+  action: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    justifyContent: "center",
+    gap: 6,
+    height: 46,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    flexShrink: 1,
+    borderColor: THEME.primaryMuted,
   },
-  topUp: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: ACCENT_GREEN,
-    borderRadius: 999,
-    paddingHorizontal: 16,
-    height: 42,
-    shadowColor: ACCENT_GREEN,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 5,
+  actionPrimary: {
+    backgroundColor: THEME.primary,
+    borderColor: THEME.primary,
   },
-  topUpText: {},
+  actionText: {
+    fontSize: 14.5,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+  },
+  actionTextPrimary: {
+    color: THEME.onPrimary,
+  },
 });

@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     paddingBottom: hp("2%"),
     backgroundColor: COLORS.white,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: "#F4F4F4",
   },
   backButton: {
     width: 40,
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
   },
   settingsButton: {
     width: 40,
@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     padding: wp("4%"),
     marginBottom: hp("1.5%"),
   },
@@ -71,11 +71,11 @@ export const styles = StyleSheet.create({
   notificationTitle: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     flex: 1,
   },
   newBadge: {
-    backgroundColor: "#10B981",
+    backgroundColor: "#111111",
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
   },
   notificationMessage: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 18,
     marginBottom: hp("1%"),
   },
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
   },
   notificationTime: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: "#A2A2A2",
   },
   viewLink: {
     fontSize: 13,

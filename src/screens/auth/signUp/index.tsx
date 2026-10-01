@@ -20,12 +20,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSendRegistrationOTP } from "../../../api/hooks/useAuth";
 import Text from "../../../components/common/txt";
 
-const BRAND = "#1B3710";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
-const ERROR_RED = "#D92D20";
+const BRAND = "#111111";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#E7E7E7";
+const FIELD_BG = "#FBFBFB";
+const ERROR_RED = "#515151";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -145,7 +145,7 @@ const SignUp = () => {
             />
             <TextInput
               placeholder="name@email.com"
-              placeholderTextColor="#A8AFA5"
+              placeholderTextColor="#ADADAD"
               value={email}
               onChangeText={(text) => {
                 setEmail(text);

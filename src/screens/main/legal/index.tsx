@@ -4,11 +4,11 @@ import Text from "../../../components/common/txt";
 import CommonHeader from "../../../components/ui/commonHeader";
 import { Ionicons } from "@expo/vector-icons";
 
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#ECEFEA";
+const BRAND = "#111111";
+const LIGHT_GREEN = "#F0F0F0";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#EEEEEE";
 
 type LegalItem = {
   id: number;
@@ -94,7 +94,7 @@ const LegalRow = ({
             <Text style={styles.menuSubtext}>{item.subtitle}</Text>
           </View>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
+        <Ionicons name="chevron-forward" size={18} color="#C7C7C7" />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: "#F2F5F0",
+    borderBottomColor: "#F4F4F4",
   },
   menuLeft: {
     flexDirection: "row",
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 11.5,
     fontFamily: "Poppins-Regular",
-    color: "#A8AFA5",
+    color: "#ADADAD",
     textAlign: "center",
     marginTop: 20,
   },

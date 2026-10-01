@@ -267,14 +267,14 @@ const Receipt = () => {
       disabled={!onPress}
       activeOpacity={onPress ? 0.6 : 1}
     >
-      <Text size="xs" color="#9A9AA0" style={styles.detailLabel}>
+      <Text size="xs" color="#9A9A9A" style={styles.detailLabel}>
         {label}
       </Text>
       <View style={styles.detailValueRow}>
         <Text
           size="xs"
           variant="semibold"
-          color={valueColor || "#1A1A1E"}
+          color={valueColor || "#1A1A1A"}
           style={styles.detailValue}
         >
           {value}
@@ -305,10 +305,10 @@ const Receipt = () => {
           <MaterialCommunityIcons
             name="chevron-left"
             size={24}
-            color="#1A1A1E"
+            color="#1A1A1A"
           />
         </TouchableOpacity>
-        <Text variant="semibold" size="md" color="#1A1A1E">
+        <Text variant="semibold" size="md" color="#1A1A1A">
           Receipt
         </Text>
         <TouchableOpacity style={styles.headerBtn}>
@@ -331,14 +331,14 @@ const Receipt = () => {
               resizeMode="contain"
             />
 
-            <Text size="xs" color="#9A9AA0" style={{ marginTop: 12 }}>
+            <Text size="xs" color="#9A9A9A" style={{ marginTop: 12 }}>
               {label}
             </Text>
 
             <Text
               variant="bold"
               size="3xl"
-              color="#1A1A1E"
+              color="#1A1A1A"
               style={styles.amount}
             >
               ₦
@@ -361,7 +361,7 @@ const Receipt = () => {
               <Text
                 size="xs"
                 variant="semibold"
-                color={isSuccess ? "#16A34A" : "#DC2626"}
+                color={isSuccess ? "#7F7F7F" : "#4D4D4D"}
               >
                 {isSuccess
                   ? "Successful"
@@ -370,7 +370,7 @@ const Receipt = () => {
               <MaterialCommunityIcons
                 name={isSuccess ? "check-circle" : "close-circle"}
                 size={13}
-                color={isSuccess ? "#22c55e" : "#ef4444"}
+                color={isSuccess ? "#9B9B9B" : "#686868"}
               />
             </View>
 
@@ -387,7 +387,7 @@ const Receipt = () => {
             <Text
               variant="semibold"
               size="sm"
-              color="#1A1A1E"
+              color="#1A1A1A"
               style={styles.sectionTitle}
             >
               Transaction Details
@@ -407,7 +407,7 @@ const Receipt = () => {
             <DetailRow
               label="Status"
               value={isSuccess ? "Success" : status}
-              valueColor={isSuccess ? "#22c55e" : "#ef4444"}
+              valueColor={isSuccess ? "#9B9B9B" : "#686868"}
             />
             <DetailRow
               label="Transaction ID"
@@ -432,7 +432,7 @@ const Receipt = () => {
               <Text
                 variant="semibold"
                 size="sm"
-                color="#1A1A1E"
+                color="#1A1A1A"
                 style={styles.sectionTitle}
               >
                 Electricity Details
@@ -461,7 +461,7 @@ const Receipt = () => {
               <Text
                 variant="semibold"
                 size="sm"
-                color="#1A1A1E"
+                color="#1A1A1A"
                 style={styles.sectionTitle}
               >
                 PIN Details
@@ -486,14 +486,14 @@ const Receipt = () => {
 
           {/* Referral card
           <View style={styles.referralCard}>
-            <Text size="xs" color="#9A9AA0" style={{ marginBottom: 8 }}>
+            <Text size="xs" color="#9A9A9A" style={{ marginBottom: 8 }}>
               Share your referral code to earn bonus rewards
             </Text>
             <View style={styles.referralCodeRow}>
               <Text
                 variant="bold"
                 size="md"
-                color="#1A1A1E"
+                color="#1A1A1A"
                 style={{ letterSpacing: 0.5 }}
               >
                 {referralCode}
@@ -527,9 +527,9 @@ const Receipt = () => {
           <MaterialCommunityIcons
             name="download-outline"
             size={18}
-            color="#3A3A3E"
+            color="#3A3A3A"
           />
-          <Text size="sm" variant="semibold" color="#3A3A3E">
+          <Text size="sm" variant="semibold" color="#3A3A3A">
             Download
           </Text>
         </TouchableOpacity>
@@ -541,9 +541,9 @@ const Receipt = () => {
           <MaterialCommunityIcons
             name="share-variant-outline"
             size={18}
-            color="#3A3A3E"
+            color="#3A3A3A"
           />
-          <Text size="sm" variant="semibold" color="#3A3A3E">
+          <Text size="sm" variant="semibold" color="#3A3A3A">
             Share
           </Text>
         </TouchableOpacity>
@@ -566,7 +566,7 @@ const Receipt = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
   },
   scrollContent: {
     paddingBottom: 36,
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "ios" ? 56 : 40,
     paddingBottom: 12,
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
   },
   headerBtn: {
     width: 36,
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
 
   // ── Capture wrapper ───────────────────────────
   captureWrapper: {
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
     paddingHorizontal: 16,
     gap: 2,
   },
@@ -627,26 +627,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "#F0FDF4",
+    backgroundColor: "#FAFAFA",
     borderWidth: 1,
-    borderColor: "#BBF7D0",
+    borderColor: "#E7E7E7",
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 20,
     marginBottom: 20,
   },
   statusBadgeFailed: {
-    backgroundColor: "#FEF2F2",
-    borderColor: "#FECACA",
+    backgroundColor: "#F5F5F5",
+    borderColor: "#D5D5D5",
   },
   statusDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#22c55e",
+    backgroundColor: "#111111",
   },
   statusDotFailed: {
-    backgroundColor: "#ef4444",
+    backgroundColor: "#686868",
   },
 
   // Torn ticket edge
@@ -659,14 +659,14 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
     marginLeft: -10,
   },
   tornCircleRight: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#F5F5F7",
+    backgroundColor: "#F5F5F5",
     marginRight: -10,
   },
   dashedLine: {
@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 11,
     borderBottomWidth: 1,
-    borderBottomColor: "#F5F5F7",
+    borderBottomColor: "#F5F5F5",
   },
   detailLabel: {
     flex: 1,
@@ -730,18 +730,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F8F5FF",
+    backgroundColor: "#F6F6F6",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#EDE1FF",
+    borderColor: "#E6E6E6",
   },
   copyBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#EDE1FF",
+    backgroundColor: "#E6E6E6",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,

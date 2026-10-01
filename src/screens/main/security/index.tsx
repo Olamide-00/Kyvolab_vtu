@@ -12,12 +12,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Text from "../../../components/common/txt";
 
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#ECEFEA";
-const AMBER = "#E8862E";
+const BRAND = "#111111";
+const LIGHT_GREEN = "#F0F0F0";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#EEEEEE";
+const AMBER = "#949494";
 
 const BASE_SCORE = 66; // PIN + password
 const BIOMETRIC_BONUS = 34; // biometrics brings it to 100
@@ -175,7 +175,7 @@ const Security = () => {
               navigation.navigate("StackNav", { screen: "ChangePIN1" })
             }
             right={
-              <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
+              <Ionicons name="chevron-forward" size={18} color="#C7C7C7" />
             }
           />
 
@@ -189,7 +189,7 @@ const Security = () => {
               navigation.navigate("StackNav", { screen: "ChangePassword" })
             }
             right={
-              <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
+              <Ionicons name="chevron-forward" size={18} color="#C7C7C7" />
             }
           />
         </View>
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#F2F5F0",
+    backgroundColor: "#F4F4F4",
     marginLeft: 16 + 38 + 12, // aligns under the text, not the icon
   },
   menuLeft: {

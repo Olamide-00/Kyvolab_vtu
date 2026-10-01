@@ -8,28 +8,28 @@ import { COLORS } from "../../../constants/Colors";
 
 // Success palette — rich emerald green
 const S = {
-  bg: "#0A2E1A", // deep forest green
-  bgMid: "#0F3D22",
-  accent: "#22c55e", // vivid green
-  accentSoft: "#16a34a",
-  ring1: "rgba(34,197,94,0.15)",
-  ring2: "rgba(34,197,94,0.08)",
-  pill: "rgba(34,197,94,0.15)",
-  pillBorder: "rgba(34,197,94,0.3)",
-  blob: "rgba(34,197,94,0.07)",
+  bg: "#1C1C1C", // deep forest green
+  bgMid: "#1C1C1C",
+  accent: "#9B9B9B", // vivid green
+  accentSoft: "#7F7F7F",
+  ring1: "rgba(155,155,155,0.15)",
+  ring2: "rgba(155,155,155,0.08)",
+  pill: "rgba(155,155,155,0.15)",
+  pillBorder: "rgba(155,155,155,0.3)",
+  blob: "rgba(155,155,155,0.07)",
 };
 
 // Failed palette — deep crimson
 const F = {
-  bg: "#2A0A0A", // deep dark red
-  bgMid: "#3D0F0F",
-  accent: "#ef4444",
-  accentSoft: "#dc2626",
-  ring1: "rgba(239,68,68,0.15)",
-  ring2: "rgba(239,68,68,0.08)",
-  pill: "rgba(239,68,68,0.12)",
-  pillBorder: "rgba(239,68,68,0.3)",
-  blob: "rgba(239,68,68,0.07)",
+  bg: "#111111", // deep dark red
+  bgMid: "#191919",
+  accent: "#686868",
+  accentSoft: "#4D4D4D",
+  ring1: "rgba(104,104,104,0.15)",
+  ring2: "rgba(104,104,104,0.08)",
+  pill: "rgba(104,104,104,0.12)",
+  pillBorder: "rgba(104,104,104,0.3)",
+  blob: "rgba(104,104,104,0.07)",
 };
 
 export const styles = StyleSheet.create({
@@ -96,13 +96,13 @@ export const styles = StyleSheet.create({
     borderRadius: 64,
     backgroundColor: S.ring1,
     borderWidth: 1.5,
-    borderColor: "rgba(34,197,94,0.25)",
+    borderColor: "rgba(155,155,155,0.25)",
     justifyContent: "center",
     alignItems: "center",
   },
   iconRingFailed: {
     backgroundColor: F.ring1,
-    borderColor: "rgba(239,68,68,0.25)",
+    borderColor: "rgba(104,104,104,0.25)",
   },
   iconInner: {
     width: 96,

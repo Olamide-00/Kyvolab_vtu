@@ -15,10 +15,10 @@ export const styles = StyleSheet.create({
     paddingTop: hp("2%"),
   },
   menuContainer: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     overflow: "hidden",
   },
   menuItem: {
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: wp("4%"),
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: "#F4F4F4",
   },
   menuItemLast: {
     borderBottomWidth: 0,
@@ -43,13 +43,13 @@ export const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
     alignItems: "center",
     justifyContent: "center",
   },
   menuText: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#1F2937",
+    color: "#282828",
   },
 });

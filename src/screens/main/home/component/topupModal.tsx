@@ -7,46 +7,44 @@ import {
   Animated,
   Dimensions,
   TouchableWithoutFeedback,
-  ScrollView,
   Easing,
+  Share,
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import { useNavigation } from "@react-navigation/native";
 import useAuthStore from "../../../../store/userStore";
 import Text from "../../../../components/common/txt";
+import { FONTS, RADIUS, THEME } from "../../../../theme";
 
-const { height } = Dimensions.get("window");
-
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const AMBER = "#8B6E00";
-const AMBER_BG = "#FDF6E3";
+const { width } = Dimensions.get("window");
+const TICKET_WIDTH = Math.min(width - 40, 380);
+const NOTCH = 22;
 
 interface TopUpModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
+type CopyKey = "number" | "name" | "bank" | null;
+
+// "0123456789" → "012 345 6789"
+const groupDigits = (value: string) =>
+  /^\d{10}$/.test(value)
+    ? `${value.slice(0, 3)} ${value.slice(3, 6)} ${value.slice(6)}`
+    : value;
+
 const TopUpModal: React.FC<TopUpModalProps> = ({ visible, onClose }) => {
-  // Backdrop
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  // Sheet position + subtle scale (Apple-style: sheet starts slightly
-  // scaled down and un-scales as it settles)
-  const slideAnim = useRef(new Animated.Value(height)).current;
-  const sheetScale = useRef(new Animated.Value(0.96)).current;
-  // Content inside the sheet — fades/rises in just after the sheet lands
-  const contentOpacity = useRef(new Animated.Value(0)).current;
-  const contentTranslate = useRef(new Animated.Value(16)).current;
+  const navigation = useNavigation<any>();
 
-  // Waiting dots
-  const dot1 = useRef(new Animated.Value(0.3)).current;
-  const dot2 = useRef(new Animated.Value(0.3)).current;
-  const dot3 = useRef(new Animated.Value(0.3)).current;
+  const backdrop = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.88)).current;
+  const lift = useRef(new Animated.Value(24)).current;
+  const pulse = useRef(new Animated.Value(0)).current;
 
-  const [copied, setCopied] = useState(false);
   const [rendered, setRendered] = useState(visible);
+  const [copied, setCopied] = useState<CopyKey>(null);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const userData = useAuthStore((state) => state.userData);
   const isWalletCreated = useAuthStore((state) => state.isWalletCreated);
@@ -58,114 +56,86 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ visible, onClose }) => {
   const hasAccount =
     isWalletCreated && !!accountNumber && accountNumber !== "—";
 
+  // ── Open / close: backdrop fades, ticket pops from slightly below ──
   useEffect(() => {
     if (visible) {
       setRendered(true);
-
-      // 1) Backdrop dims first (quick)
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 230,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-
-      // 2) Sheet rises with a controlled, non-bouncy spring
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 68,
-        friction: 14,
-      }).start();
-
-      Animated.spring(sheetScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 68,
-        friction: 14,
-      }).start();
-
-      // 3) Content inside fades/rises in slightly after the sheet
-      //    has begun settling — this is what makes it feel sequenced
-      //    rather than "everything at once"
-      contentOpacity.setValue(0);
-      contentTranslate.setValue(16);
+      scale.setValue(0.88);
+      lift.setValue(24);
       Animated.parallel([
-        Animated.timing(contentOpacity, {
+        Animated.timing(backdrop, {
           toValue: 1,
-          duration: 280,
-          delay: 140,
-          easing: Easing.out(Easing.cubic),
+          duration: 220,
+          easing: Easing.out(Easing.ease),
           useNativeDriver: true,
         }),
-        Animated.spring(contentTranslate, {
-          toValue: 0,
-          delay: 140,
+        Animated.spring(scale, {
+          toValue: 1,
+          tension: 90,
+          friction: 11,
           useNativeDriver: true,
-          speed: 16,
-          bounciness: 4,
+        }),
+        Animated.spring(lift, {
+          toValue: 0,
+          tension: 90,
+          friction: 11,
+          useNativeDriver: true,
         }),
       ]).start();
     } else {
-      // Reverse: content drops out fast, sheet + backdrop follow
-      Animated.timing(contentOpacity, {
-        toValue: 0,
-        duration: 120,
-        useNativeDriver: true,
-      }).start();
-
       Animated.parallel([
-        Animated.timing(slideAnim, {
-          toValue: height,
-          duration: 260,
-          easing: Easing.in(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(sheetScale, {
-          toValue: 0.96,
-          duration: 260,
-          easing: Easing.in(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
+        Animated.timing(backdrop, {
           toValue: 0,
-          duration: 220,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 0.92,
+          duration: 180,
+          easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
       ]).start(() => setRendered(false));
     }
   }, [visible]);
 
-  // Waiting-dots pulse loop
+  // ── "Listening for transfer" pulse ring ──
   useEffect(() => {
     if (!visible || !hasAccount) return;
-
-    const pulse = (anim: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 400,
-            delay,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0.3,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-        ])
-      );
-
-    const anims = [pulse(dot1, 0), pulse(dot2, 150), pulse(dot3, 300)];
-    anims.forEach((a) => a.start());
-    return () => anims.forEach((a) => a.stop());
+    pulse.setValue(0);
+    const loop = Animated.loop(
+      Animated.timing(pulse, {
+        toValue: 1,
+        duration: 1400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
   }, [visible, hasAccount]);
 
-  const handleCopy = async (text: string) => {
-    await Clipboard.setStringAsync(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
+  useEffect(() => {
+    return () => {
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+    };
+  }, []);
+
+  const handleCopy = async (key: Exclude<CopyKey, null>, value: string) => {
+    await Clipboard.setStringAsync(value);
+    setCopied(key);
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(null), 1800);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Account name: ${accountName}\nBank: ${bankName}\nAccount number: ${accountNumber}`,
+      });
+    } catch {
+      // user dismissed the share sheet — nothing to do
+    }
   };
 
   const handleMoneySent = async () => {
@@ -175,7 +145,57 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ visible, onClose }) => {
     onClose();
   };
 
+  const handleCreateAccount = () => {
+    onClose();
+    navigation.navigate("StackNav", { screen: "Wallet" });
+  };
+
   if (!rendered) return null;
+
+  const pulseScale = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 2.4],
+  });
+  const pulseOpacity = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 0],
+  });
+
+  const DetailRow = ({
+    icon,
+    label,
+    value,
+    copyKey,
+  }: {
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    value: string;
+    copyKey: Exclude<CopyKey, null>;
+  }) => (
+    <View style={styles.detailRow}>
+      <View style={styles.detailIcon}>
+        <Ionicons name={icon} size={17} color={THEME.primary} />
+      </View>
+      <View style={styles.detailText}>
+        <Text style={styles.detailLabel}>{label}</Text>
+        <Text style={styles.detailValue} numberOfLines={1}>
+          {value}
+        </Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => handleCopy(copyKey, value)}
+        hitSlop={8}
+        style={styles.detailCopy}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name={copied === copyKey ? "checkmark" : "copy-outline"}
+          size={16}
+          color={THEME.primary}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <Modal
@@ -186,212 +206,166 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ visible, onClose }) => {
       statusBarTranslucent
     >
       <TouchableWithoutFeedback onPress={onClose}>
-        <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+        <Animated.View style={[styles.backdrop, { opacity: backdrop }]}>
           <TouchableWithoutFeedback>
             <Animated.View
               style={[
-                styles.modalContainer,
+                styles.ticketWrap,
                 {
-                  transform: [{ translateY: slideAnim }, { scale: sheetScale }],
+                  transform: [{ translateY: lift }, { scale }],
                 },
               ]}
             >
-              <View style={styles.handleBar} />
-
-              <Animated.View
-                style={{
-                  opacity: contentOpacity,
-                  transform: [{ translateY: contentTranslate }],
-                }}
-              >
-                <ScrollView
-                  showsVerticalScrollIndicator={false}
-                  bounces={false}
-                >
-                  {/* Header */}
-                  <View style={styles.header}>
-                    <View>
-                      <Text style={styles.headerTitle}>Top Up Wallet</Text>
-                      <Text style={styles.headerSubtitle}>
-                        via Bank Transfer
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      onPress={onClose}
-                      style={styles.closeButton}
-                      activeOpacity={0.7}
-                    >
-                      <MaterialCommunityIcons
-                        name="close"
-                        size={22}
-                        color={MUTED}
-                      />
-                    </TouchableOpacity>
+              {!hasAccount ? (
+                /* ── No account yet ── */
+                <View style={[styles.ticket, styles.emptyTicket]}>
+                  <View style={styles.emptyIcon}>
+                    <Ionicons
+                      name="card-outline"
+                      size={30}
+                      color={THEME.onPrimary}
+                    />
                   </View>
-
-                  {/* Icon Section */}
-                  <View style={styles.iconSection}>
-                    <View style={styles.iconContainer}>
-                      <MaterialCommunityIcons
-                        name="bank-transfer"
-                        size={44}
-                        color={BRAND}
-                      />
-                    </View>
-                    <Text style={styles.iconSubtitle}>
-                      Transfer to the account below to fund your wallet
-                      instantly
+                  <Text style={styles.emptyTitle}>
+                    Get your account number
+                  </Text>
+                  <Text style={styles.emptyBody}>
+                    You need a personal account number before you can add
+                    money by bank transfer. It only takes a minute.
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.primaryButton}
+                    onPress={handleCreateAccount}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      Create account
                     </Text>
-                  </View>
-
-                  {/* No account state */}
-                  {!hasAccount ? (
-                    <View style={styles.noAccountCard}>
-                      <View style={styles.noAccountIconCircle}>
-                        <MaterialCommunityIcons
-                          name="bank-off-outline"
-                          size={30}
-                          color={BRAND}
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={onClose} hitSlop={8}>
+                    <Text style={styles.laterText}>Maybe later</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={styles.ticket}>
+                  {/* ── Stub: account number ── */}
+                  <View style={styles.stub}>
+                    <View style={styles.stubTopRow}>
+                      <Text style={styles.stubEyebrow}>ADD MONEY</Text>
+                      <TouchableOpacity
+                        onPress={onClose}
+                        hitSlop={10}
+                        style={styles.closeButton}
+                      >
+                        <Ionicons
+                          name="close"
+                          size={18}
+                          color={THEME.onPrimary}
                         />
-                      </View>
-                      <Text style={styles.noAccountTitle}>No Account Yet</Text>
-                      <Text style={styles.noAccountSubtitle}>
-                        You haven't created a wallet account yet. Create one to
-                        start receiving money.
+                      </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.stubHint}>
+                      Transfer any amount to
+                    </Text>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() => handleCopy("number", accountNumber)}
+                    >
+                      <Text
+                        style={styles.bigNumber}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                      >
+                        {groupDigits(accountNumber)}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.tapHint}>
+                      <Ionicons
+                        name={
+                          copied === "number" ? "checkmark-circle" : "copy"
+                        }
+                        size={12}
+                        color={THEME.onPrimaryMuted}
+                      />
+                      <Text style={styles.tapHintText}>
+                        {copied === "number" ? "Copied" : "Tap number to copy"}
                       </Text>
                     </View>
-                  ) : (
-                    <>
-                      {/* Bank Details Card */}
-                      <View style={styles.bankDetailsCard}>
-                        {/* Account Name */}
-                        <View style={styles.bankDetailRow}>
-                          <View style={styles.bankDetailLeft}>
-                            <View style={styles.iconWrapper}>
-                              <MaterialCommunityIcons
-                                name="account"
-                                size={20}
-                                color={BRAND}
-                              />
-                            </View>
-                            <View style={styles.bankDetailTextContainer}>
-                              <Text style={styles.bankDetailLabel}>
-                                Account Name
-                              </Text>
-                              <Text style={styles.bankDetailValue}>
-                                {accountName}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
+                  </View>
 
-                        <View style={styles.divider} />
+                  {/* ── Perforation with side notches ── */}
+                  <View style={styles.perforation}>
+                    {/* Each notch is clipped to its inner half so only
+                        the cut-out edge shows, not an arc on the backdrop */}
+                    <View style={[styles.notchClip, styles.notchClipLeft]}>
+                      <View style={[styles.notch, styles.notchLeft]} />
+                    </View>
+                    <View style={styles.dashes} />
+                    <View style={[styles.notchClip, styles.notchClipRight]}>
+                      <View style={styles.notch} />
+                    </View>
+                  </View>
 
-                        {/* Bank Name */}
-                        <View style={styles.bankDetailRow}>
-                          <View style={styles.bankDetailLeft}>
-                            <View style={styles.iconWrapper}>
-                              <MaterialCommunityIcons
-                                name="bank"
-                                size={20}
-                                color={BRAND}
-                              />
-                            </View>
-                            <View style={styles.bankDetailTextContainer}>
-                              <Text style={styles.bankDetailLabel}>
-                                Bank Name
-                              </Text>
-                              <Text style={styles.bankDetailValue}>
-                                {bankName}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
+                  {/* ── Body: details ── */}
+                  <View style={styles.body}>
+                    <DetailRow
+                      icon="business-outline"
+                      label="Bank"
+                      value={bankName}
+                      copyKey="bank"
+                    />
+                    <DetailRow
+                      icon="person-outline"
+                      label="Account name"
+                      value={accountName}
+                      copyKey="name"
+                    />
 
-                        <View style={styles.divider} />
-
-                        {/* Account Number */}
-                        <View style={styles.bankDetailRow}>
-                          <View style={styles.bankDetailLeft}>
-                            <View style={styles.iconWrapper}>
-                              <MaterialCommunityIcons
-                                name="credit-card-outline"
-                                size={20}
-                                color={BRAND}
-                              />
-                            </View>
-                            <View style={styles.bankDetailTextContainer}>
-                              <Text style={styles.bankDetailLabel}>
-                                Account Number
-                              </Text>
-                              <Text style={styles.bankDetailValue}>
-                                {accountNumber}
-                              </Text>
-                            </View>
-                          </View>
-                          <TouchableOpacity
-                            style={[
-                              styles.copyButton,
-                              copied && styles.copyButtonActive,
-                            ]}
-                            onPress={() => handleCopy(accountNumber)}
-                            activeOpacity={0.7}
-                          >
-                            <MaterialCommunityIcons
-                              name={copied ? "check" : "content-copy"}
-                              size={18}
-                              color={copied ? "#FFFFFF" : BRAND}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      {/* Info Note */}
-                      <View style={styles.infoCard}>
-                        <MaterialCommunityIcons
-                          name="information"
-                          size={18}
-                          color={AMBER}
+                    <View style={styles.listening}>
+                      <View style={styles.pulseWrap}>
+                        <Animated.View
+                          style={[
+                            styles.pulseRing,
+                            {
+                              opacity: pulseOpacity,
+                              transform: [{ scale: pulseScale }],
+                            },
+                          ]}
                         />
-                        <Text style={styles.infoText}>
-                          Your wallet will be funded automatically within 2
-                          minutes after sending money from your bank app
-                        </Text>
+                        <View style={styles.pulseDot} />
                       </View>
+                      <Text style={styles.listeningText}>
+                        Credited automatically within 2 minutes
+                      </Text>
+                    </View>
 
-                      {/* Money Sent Button */}
+                    <View style={styles.actions}>
                       <TouchableOpacity
-                        style={styles.moneySentButton}
+                        style={styles.secondaryButton}
+                        onPress={handleShare}
+                        activeOpacity={0.8}
+                      >
+                        <Ionicons
+                          name="share-social-outline"
+                          size={17}
+                          color={THEME.primary}
+                        />
+                        <Text style={styles.secondaryButtonText}>Share</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.primaryButton, styles.flexButton]}
                         onPress={handleMoneySent}
                         activeOpacity={0.85}
                       >
-                        <Text style={styles.moneySentButtonText}>
-                          I've Sent The Money
+                        <Text style={styles.primaryButtonText}>
+                          I've sent it
                         </Text>
                       </TouchableOpacity>
-
-                      <View style={styles.waitingContainer}>
-                        <View style={styles.dotContainer}>
-                          <Animated.View
-                            style={[styles.dot, { opacity: dot1 }]}
-                          />
-                          <Animated.View
-                            style={[styles.dot, { opacity: dot2 }]}
-                          />
-                          <Animated.View
-                            style={[styles.dot, { opacity: dot3 }]}
-                          />
-                        </View>
-                        <Text style={styles.waitingText}>
-                          Waiting for transfer
-                        </Text>
-                      </View>
-                    </>
-                  )}
-
-                  <View style={styles.bottomSpacer} />
-                </ScrollView>
-              </Animated.View>
+                    </View>
+                  </View>
+                </View>
+              )}
             </Animated.View>
           </TouchableWithoutFeedback>
         </Animated.View>
@@ -400,211 +374,281 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ visible, onClose }) => {
   );
 };
 
+// Solid so the ticket notches (filled with this color) read as true cut-outs
+const BACKDROP = THEME.bg;
+
 const styles = StyleSheet.create({
-  overlay: {
+  backdrop: {
     flex: 1,
-    backgroundColor: "rgba(18,40,8,0.5)",
-    justifyContent: "flex-end",
+    backgroundColor: BACKDROP,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
   },
-  modalContainer: {
-    backgroundColor: "#F7F9F6",
-    borderTopLeftRadius: 26,
-    borderTopRightRadius: 26,
-    paddingTop: 10,
-    maxHeight: height * 0.85,
-    minHeight: height * 0.6,
+  ticketWrap: {
+    width: TICKET_WIDTH,
   },
-  handleBar: {
-    width: 42,
-    height: 5,
-    backgroundColor: "#DDE3DA",
-    borderRadius: 3,
-    alignSelf: "center",
-    marginBottom: 10,
+  ticket: {
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
   },
-  header: {
+
+  // ── Stub ──────────────────────────────────────
+  stub: {
+    backgroundColor: THEME.primary,
+    // sit inside the ticket's 1px border
+    borderTopLeftRadius: RADIUS.xl - 1,
+    borderTopRightRadius: RADIUS.xl - 1,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 26,
+    alignItems: "center",
+  },
+  stubTopRow: {
+    alignSelf: "stretch",
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 16,
+    marginBottom: 18,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    marginTop: 3,
+  stubEyebrow: {
+    fontSize: 11,
+    fontFamily: FONTS.bold,
+    letterSpacing: 2,
+    color: THEME.onPrimaryMuted,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "rgba(255,255,255,0.14)",
     alignItems: "center",
     justifyContent: "center",
   },
-  iconSection: {
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 22,
+  stubHint: {
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: THEME.onPrimaryMuted,
+    marginBottom: 6,
   },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: LIGHT_GREEN,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
+  bigNumber: {
+    fontSize: 34,
+    fontFamily: FONTS.bold,
+    color: THEME.onPrimary,
+    letterSpacing: 2,
   },
-  iconSubtitle: {
-    fontSize: 13.5,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    textAlign: "center",
-    lineHeight: 19,
-    paddingHorizontal: 16,
-  },
-  noAccountCard: {
-    alignItems: "center",
-    marginHorizontal: 20,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 24,
-    gap: 6,
-  },
-  noAccountIconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  noAccountTitle: {
-    fontSize: 15,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
-  },
-  noAccountSubtitle: {
-    fontSize: 12.5,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    textAlign: "center",
-    lineHeight: 18,
-  },
-  bankDetailsCard: {
-    backgroundColor: "#FFFFFF",
-    marginHorizontal: 20,
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 14,
-  },
-  bankDetailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  bankDetailLeft: {
+  tapHint: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 5,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: RADIUS.pill,
+    backgroundColor: "rgba(255,255,255,0.10)",
+  },
+  tapHintText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.semibold,
+    color: THEME.onPrimaryMuted,
+  },
+
+  // ── Perforation ───────────────────────────────
+  perforation: {
+    height: NOTCH,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: THEME.surface,
+  },
+  // Circles filled with the backdrop color read as cut-outs
+  notch: {
+    width: NOTCH,
+    height: NOTCH,
+    borderRadius: NOTCH / 2,
+    backgroundColor: BACKDROP,
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  notchClip: {
+    width: NOTCH / 2 + 1,
+    height: NOTCH,
+    overflow: "hidden",
+  },
+  // Pull 1px outward so the notch covers the ticket's own border line
+  notchClipLeft: {
+    marginLeft: -1,
+  },
+  notchClipRight: {
+    marginRight: -1,
+  },
+  notchLeft: {
+    marginLeft: -NOTCH / 2,
+  },
+  dashes: {
     flex: 1,
+    height: 1,
+    marginHorizontal: 8,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: THEME.primarySoft,
   },
-  iconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
-    justifyContent: "center",
+
+  // ── Body ──────────────────────────────────────
+  body: {
+    paddingHorizontal: 18,
+    paddingTop: 6,
+    paddingBottom: 18,
+  },
+  detailRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginRight: 12,
+    gap: 12,
+    paddingVertical: 10,
   },
-  bankDetailTextContainer: { flex: 1 },
-  bankDetailLabel: {
-    fontSize: 12,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    marginBottom: 3,
-  },
-  bankDetailValue: {
-    fontSize: 15,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
-  },
-  copyButton: {
+  detailIcon: {
     width: 38,
     height: 38,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
+    borderRadius: 19,
+    backgroundColor: THEME.primaryTint,
+    borderWidth: 1,
+    borderColor: THEME.primarySoft,
+    alignItems: "center",
     justifyContent: "center",
+  },
+  detailText: {
+    flex: 1,
+    gap: 1,
+  },
+  detailLabel: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+  },
+  detailValue: {
+    fontSize: 15.5,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+  },
+  detailCopy: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: THEME.primaryTint,
     alignItems: "center",
-    marginLeft: 8,
+    justifyContent: "center",
   },
-  copyButtonActive: {
-    backgroundColor: BRAND,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#F2F5F0",
-    marginVertical: 14,
-  },
-  infoCard: {
+
+  listening: {
     flexDirection: "row",
-    backgroundColor: AMBER_BG,
-    marginHorizontal: 20,
-    padding: 14,
-    borderRadius: 14,
     alignItems: "center",
-    marginBottom: 16,
     gap: 10,
+    marginTop: 8,
+    marginBottom: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: RADIUS.md,
+    backgroundColor: THEME.primaryTint,
   },
-  infoText: {
+  pulseWrap: {
+    width: 14,
+    height: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pulseRing: {
+    position: "absolute",
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: THEME.primary,
+  },
+  pulseDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: THEME.primary,
+  },
+  listeningText: {
     flex: 1,
     fontSize: 12.5,
-    fontFamily: "Poppins-Regular",
-    color: AMBER,
-    lineHeight: 17,
+    fontFamily: FONTS.regular,
+    color: THEME.textSecondary,
   },
-  moneySentButton: {
-    backgroundColor: BRAND,
-    marginHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: "center",
-  },
-  moneySentButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15.5,
-    fontFamily: "Poppins-SemiBold",
-  },
-  waitingContainer: {
-    alignItems: "center",
-    marginTop: 16,
-  },
-  dotContainer: {
+
+  actions: {
     flexDirection: "row",
+    gap: 10,
+  },
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
-    marginBottom: 8,
+    height: 52,
+    paddingHorizontal: 18,
+    borderRadius: RADIUS.pill,
+    borderWidth: 1.5,
+    borderColor: THEME.primary,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: BRAND,
+  secondaryButtonText: {
+    fontSize: 15,
+    fontFamily: FONTS.bold,
+    color: THEME.primary,
   },
-  waitingText: {
-    fontSize: 12.5,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
+  primaryButton: {
+    height: 52,
+    alignSelf: "stretch",
+    borderRadius: RADIUS.pill,
+    backgroundColor: THEME.primary,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  bottomSpacer: { height: 24 },
+  flexButton: {
+    flex: 1,
+  },
+  primaryButtonText: {
+    fontSize: 15.5,
+    fontFamily: FONTS.bold,
+    color: THEME.onPrimary,
+  },
+
+  // ── No account ────────────────────────────────
+  emptyTicket: {
+    alignItems: "center",
+    padding: 24,
+  },
+  emptyIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: THEME.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 19,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+    textAlign: "center",
+    marginBottom: 6,
+  },
+  emptyBody: {
+    fontSize: 13.5,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+    textAlign: "center",
+    lineHeight: 19,
+    marginBottom: 20,
+  },
+  laterText: {
+    marginTop: 14,
+    fontSize: 14,
+    fontFamily: FONTS.semibold,
+    color: THEME.textMuted,
+  },
 });
 
 export default TopUpModal;

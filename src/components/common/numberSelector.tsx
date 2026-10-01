@@ -21,20 +21,23 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useContacts } from "../../utils/contactProvider";
 import Text from "./txt";
+import { THEME } from "../../theme";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const CLOSE_THRESHOLD = 120; // px dragged down before it snaps closed
 const CLOSE_VELOCITY = 0.8; // fling speed that closes regardless of distance
 
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
+const BRAND = THEME.primary;
+const LIGHT_GREEN = THEME.primarySoft;
+const INK = THEME.text;
+const MUTED = THEME.textMuted;
+const BORDER = THEME.border;
+const FIELD_BG = THEME.surface;
+const PLACEHOLDER = THEME.textMuted;
+const FAINT_ICON = THEME.primaryMuted;
 
 interface PhoneInputWithContactProps {
-  label: string;
+  label?: string;
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
@@ -205,7 +208,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
           <Text style={styles.contactName}>{item.name}</Text>
           <Text style={styles.contactPhone}>{item.phoneNumber}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="#C2C9BE" />
+        <Ionicons name="chevron-forward" size={18} color={FAINT_ICON} />
       </TouchableOpacity>
     ),
     [handleSelectContact]
@@ -216,7 +219,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.label}>{label}</Text>
+        {label ? <Text style={styles.label}>{label}</Text> : null}
         <View style={styles.inputWrapper}>
           <View style={styles.iconContainer}>
             <Ionicons name="call-outline" size={17} color={BRAND} />
@@ -224,7 +227,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
           <TextInput
             style={styles.input}
             placeholder={placeholder}
-            placeholderTextColor="#A8AFA5"
+            placeholderTextColor={PLACEHOLDER}
             value={value}
             onChangeText={(text) => onChangeText(text.replace(/[^0-9]/g, ""))}
             keyboardType="phone-pad"
@@ -287,7 +290,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
                       <TextInput
                         style={styles.searchInput}
                         placeholder="Search contacts"
-                        placeholderTextColor="#A8AFA5"
+                        placeholderTextColor={PLACEHOLDER}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                       />
@@ -299,7 +302,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
                           <Ionicons
                             name="close-circle"
                             size={16}
-                            color="#C2C9BE"
+                            color={FAINT_ICON}
                           />
                         </TouchableOpacity>
                       )}
@@ -379,7 +382,7 @@ const PhoneInputWithContact: React.FC<PhoneInputWithContactProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 20 },
+  container: {},
   label: {
     fontSize: 14,
     fontFamily: "Poppins-Medium",
@@ -391,14 +394,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: FIELD_BG,
     borderRadius: 14,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: BORDER,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     height: 56,
   },
   iconContainer: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     backgroundColor: LIGHT_GREEN,
     borderRadius: 10,
     alignItems: "center",
@@ -414,14 +417,14 @@ const styles = StyleSheet.create({
   contactButton: { padding: 8, marginLeft: 4 },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(18,40,8,0.45)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
   overlayTouchable: { flex: 1 },
   bottomSheetContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: THEME.surface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     maxHeight: "82%",
     height: "82%", // fixed so FlatList can size itself
   },
@@ -454,9 +457,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: FIELD_BG,
-    borderWidth: 1.5,
-    borderColor: BORDER,
+    backgroundColor: THEME.primaryTint,
     borderRadius: 14,
     paddingHorizontal: 14,
     height: 46,
@@ -533,7 +534,7 @@ const styles = StyleSheet.create({
   contactAvatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
     backgroundColor: LIGHT_GREEN,
     alignItems: "center",
     justifyContent: "center",

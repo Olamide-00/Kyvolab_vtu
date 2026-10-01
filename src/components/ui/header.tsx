@@ -5,13 +5,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Text from "../common/txt";
 import { useNavigation } from "@react-navigation/native";
 import useAuthStore, { selectUserData } from "../../store/userStore";
+import { RADIUS, THEME } from "../../theme";
 
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const LIGHT_GREEN = "#EAF3E9";
-const ACCENT_GREEN = "#A9D99B";
-const INK = "#141613";
-const MUTED = "#8A9086";
+// Designed to sit on the indigo home hero.
 
 interface HeaderProps {
   notificationCount?: number;
@@ -53,7 +49,7 @@ const Header = ({ notificationCount = 0 }: HeaderProps) => {
             />
           ) : (
             <View style={styles.avatar}>
-              <Text variant="bold" size="md" color={ACCENT_GREEN}>
+              <Text variant="bold" size="md" color={THEME.onPrimary}>
                 {initial}
               </Text>
             </View>
@@ -61,10 +57,10 @@ const Header = ({ notificationCount = 0 }: HeaderProps) => {
         </View>
 
         <View style={styles.greetingText}>
-          <Text size="xs" color={MUTED} variant="regular">
-            {getGreeting()} 👋
+          <Text size="sm" color={THEME.textMuted} variant="regular">
+            {getGreeting()},
           </Text>
-          <Text variant="bold" color={INK} style={styles.name}>
+          <Text variant="bold" color={THEME.text} style={styles.name}>
             {firstName}
           </Text>
         </View>
@@ -77,7 +73,11 @@ const Header = ({ notificationCount = 0 }: HeaderProps) => {
           onPress={() => navigation.navigate("StackNav", { screen: "Support" })}
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="headset" size={19} color={BRAND} />
+          <MaterialCommunityIcons
+            name="headset"
+            size={19}
+            color={THEME.text}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -87,12 +87,16 @@ const Header = ({ notificationCount = 0 }: HeaderProps) => {
           }
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="bell-outline" size={19} color={BRAND} />
+          <MaterialCommunityIcons
+            name="bell-outline"
+            size={19}
+            color={THEME.text}
+          />
           {notificationCount > 0 && (
             <View style={styles.notifBadge}>
               <Text
                 size="xs"
-                color="#fff"
+                color={THEME.onPrimary}
                 variant="bold"
                 style={styles.notifCount}
               >
@@ -110,7 +114,6 @@ export default Header;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -123,16 +126,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 11,
   },
-  avatarRing: {
-    padding: 2.5,
-    borderRadius: 26,
-    backgroundColor: LIGHT_GREEN,
-  },
+  avatarRing: {},
   avatar: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: BRAND,
+    backgroundColor: THEME.primary,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -160,7 +159,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: LIGHT_GREEN,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -174,11 +175,11 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     paddingHorizontal: 3,
-    backgroundColor: "#EF4444",
+    backgroundColor: THEME.primary,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: "#fff",
+    borderColor: THEME.surface,
   },
   notifCount: {
     fontSize: 9,

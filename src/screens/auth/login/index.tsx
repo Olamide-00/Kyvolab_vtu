@@ -22,11 +22,11 @@ import useAuthStore from "../../../store/userStore";
 import { useLogin } from "../../../api/hooks/useAuth";
 import Text from "../../../components/common/txt";
 
-const BRAND = "#1B3710";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const ERROR_RED = "#D92D20";
+const BRAND = "#111111";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#E7E7E7";
+const ERROR_RED = "#515151";
 
 type BiometricType = "face" | "fingerprint" | null;
 

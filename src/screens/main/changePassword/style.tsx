@@ -21,12 +21,12 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     marginBottom: hp("1%"),
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 20,
   },
   formContainer: {
@@ -38,12 +38,12 @@ export const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
+    color: "#404040",
   },
   inputWrapper: {
     position: "relative",
     borderWidth: 2,
-    borderColor: "#3B82F6",
+    borderColor: "#7B7B7B",
     borderRadius: 8,
     backgroundColor: "#FFFFFF",
   },
@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("1.8%"),
     fontSize: 15,
-    color: "#1F2937",
+    color: "#282828",
     paddingRight: wp("12%"),
   },
   eyeIcon: {

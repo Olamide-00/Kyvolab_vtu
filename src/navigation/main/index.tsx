@@ -2,22 +2,14 @@ import React, { useRef, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Home } from "../../screens/main/home";
 import ProfileScreen from "../../screens/main/profile";
-import {
-  View,
-  StyleSheet,
-  Animated,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
-import { Home2, Profile, Wallet, Category } from "iconsax-react-native";
+import { View, StyleSheet, Animated, Pressable, Platform } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Service from "../../screens/main/service";
 import Transaction from "../../screens/main/transaction";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Text from "../../components/common/txt";
+import { RADIUS, SHADOW, THEME } from "../../theme";
 
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const INACTIVE_ICON = "#8A9086";
+type IconName = keyof typeof Ionicons.glyphMap;
 
 export type MainTabParamList = {
   HomeTab: undefined;
@@ -35,113 +27,103 @@ const SCREENS: Record<string, React.ComponentType<any>> = {
   ProfileTab: ProfileScreen,
 };
 
-const TABS = [
-  { name: "HomeTab", label: "Home", Icon: Home2 },
-  { name: "Service", label: "Service", Icon: Category },
-  { name: "Transaction", label: "Wallet", Icon: Wallet },
-  { name: "ProfileTab", label: "Profile", Icon: Profile },
+// Labels match each screen's title; icons swap outline → filled when active
+const TABS: {
+  name: string;
+  label: string;
+  icon: IconName;
+  iconActive: IconName;
+}[] = [
+  { name: "HomeTab", label: "Home", icon: "home-outline", iconActive: "home" },
+  { name: "Service", label: "Pay", icon: "grid-outline", iconActive: "grid" },
+  {
+    name: "Transaction",
+    label: "History",
+    icon: "receipt-outline",
+    iconActive: "receipt",
+  },
+  {
+    name: "ProfileTab",
+    label: "Profile",
+    icon: "person-outline",
+    iconActive: "person",
+  },
 ];
 
-// ─── One tab button — split native (transform) vs JS (layout/color) driven animations ──
+// Compact icon-only dock: sized to its buttons, centered at the bottom
+const BUTTON = 48;
+const GAP = 6;
+const BAR_PADDING = 6;
+
+// ─── One tab — icon only, with a press-shrink ────────────────────
 const TabButton = ({
   focused,
   label,
-  Icon,
+  icon,
+  iconActive,
   onPress,
 }: {
   focused: boolean;
   label: string;
-  Icon: React.ComponentType<any>;
+  icon: IconName;
+  iconActive: IconName;
   onPress: () => void;
 }) => {
-  const progress = useRef(new Animated.Value(focused ? 1 : 0)).current;
   const scale = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    Animated.spring(progress, {
-      toValue: focused ? 1 : 0,
-      useNativeDriver: false, // width/backgroundColor — JS driver only
-      speed: 16,
-      bounciness: 6,
-    }).start();
-  }, [focused]);
-
-  const handlePressIn = () => {
+  const pressTo = (to: number) =>
     Animated.spring(scale, {
-      toValue: 0.92,
-      useNativeDriver: true, // transform — native driver only
-      speed: 50,
-      bounciness: 0,
-    }).start();
-  };
-  const handlePressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
+      toValue: to,
       useNativeDriver: true,
-      speed: 18,
-      bounciness: 8,
+      speed: to < 1 ? 50 : 20,
+      bounciness: to < 1 ? 0 : 8,
     }).start();
-  };
-
-  const pillWidth = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [44, 118],
-  });
-  const pillBg = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["rgba(0,0,0,0)", BRAND],
-  });
-  const labelOpacity = progress;
-  const labelWidth = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 70],
-  });
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.85}
+    <Pressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={styles.tabTouchable}
+      onPressIn={() => pressTo(0.86)}
+      onPressOut={() => pressTo(1)}
+      hitSlop={4}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: focused }}
+      accessibilityLabel={label}
     >
-      {/* Outer view: native-driven scale ONLY */}
-      <Animated.View style={{ transform: [{ scale }] }}>
-        {/* Inner view: JS-driven width/backgroundColor ONLY */}
-        <Animated.View
-          style={[styles.pill, { width: pillWidth, backgroundColor: pillBg }]}
-        >
-          <Icon
-            size={20}
-            color={focused ? "#FFFFFF" : INACTIVE_ICON}
-            variant={focused ? "Bold" : "Outline"}
-          />
-          <Animated.View
-            style={{
-              width: labelWidth,
-              opacity: labelOpacity,
-              overflow: "hidden",
-            }}
-          >
-            <Text style={styles.pillLabel} numberOfLines={1}>
-              {label}
-            </Text>
-          </Animated.View>
-        </Animated.View>
+      <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
+        <Ionicons
+          name={focused ? iconActive : icon}
+          size={21}
+          color={focused ? THEME.text : "rgba(255,255,255,0.6)"}
+        />
       </Animated.View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
-// ─── Custom tab bar — fully owns its own layout, no layering issues ──
+// ─── Charcoal pill with a sliding white circle ───────────────────
 const CustomTabBar = ({ state, navigation }: any) => {
   const insets = useSafeAreaInsets();
+  const slide = useRef(new Animated.Value(state.index)).current;
 
-  // Float above the true bottom edge; on devices with a large inset
-  // (Android 3-button nav, iOS home indicator) the gap grows accordingly
-  // so the bar never crowds system UI.
+  useEffect(() => {
+    Animated.spring(slide, {
+      toValue: state.index,
+      useNativeDriver: true,
+      speed: 16,
+      bounciness: 6,
+    }).start();
+  }, [state.index]);
+
+  const last = Math.max(state.routes.length - 1, 1);
+  const translateX = slide.interpolate({
+    inputRange: [0, last],
+    outputRange: [0, (BUTTON + GAP) * last],
+  });
+
+  // Float above the true bottom edge; larger insets (home indicator,
+  // Android 3-button nav) push the bar up accordingly
   const bottomOffset =
-    Math.max(insets.bottom, 12) + (Platform.OS === "android" ? 4 : 0);
+    Math.max(insets.bottom, 14) + (Platform.OS === "android" ? 4 : 0);
 
   return (
     <View
@@ -149,6 +131,11 @@ const CustomTabBar = ({ state, navigation }: any) => {
       pointerEvents="box-none"
     >
       <View style={styles.bar}>
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.indicator, { transform: [{ translateX }] }]}
+        />
+
         {state.routes.map((route: any, index: number) => {
           const tab = TABS.find((t) => t.name === route.name)!;
           const focused = state.index === index;
@@ -169,7 +156,8 @@ const CustomTabBar = ({ state, navigation }: any) => {
               key={route.key}
               focused={focused}
               label={tab.label}
-              Icon={tab.Icon}
+              icon={tab.icon}
+              iconActive={tab.iconActive}
               onPress={onPress}
             />
           );
@@ -209,32 +197,26 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 28,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    shadowColor: BRAND_DEEP,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 20,
-    elevation: 12,
+    gap: GAP,
+    padding: BAR_PADDING,
+    borderRadius: RADIUS.pill,
+    backgroundColor: THEME.primary,
+    ...SHADOW.raised,
   },
-  tabTouchable: {
-    borderRadius: 22,
+  indicator: {
+    position: "absolute",
+    top: BAR_PADDING,
+    left: BAR_PADDING,
+    width: BUTTON,
+    height: BUTTON,
+    borderRadius: BUTTON / 2,
+    backgroundColor: THEME.surface,
   },
-  pill: {
-    flexDirection: "row",
+  button: {
+    width: BUTTON,
+    height: BUTTON,
+    borderRadius: BUTTON / 2,
     alignItems: "center",
-    height: 44,
-    borderRadius: 22,
     justifyContent: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-  },
-  pillLabel: {
-    fontSize: 12.5,
-    fontFamily: "Poppins-SemiBold",
-    color: "#FFFFFF",
   },
 });

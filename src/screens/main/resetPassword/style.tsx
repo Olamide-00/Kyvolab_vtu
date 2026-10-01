@@ -27,12 +27,12 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     marginBottom: hp("1%"),
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 20,
   },
   formContainer: {
@@ -44,20 +44,20 @@ export const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
+    color: "#404040",
   },
   inputWrapper: {
     position: "relative",
   },
   input: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     borderRadius: 8,
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("1.8%"),
     fontSize: 15,
-    color: "#1F2937",
+    color: "#282828",
     paddingRight: wp("12%"),
   },
   eyeIcon: {
@@ -78,10 +78,10 @@ export const styles = StyleSheet.create({
   },
   requirementText: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#727272",
   },
   requirementMet: {
-    color: "#10B981",
+    color: "#919191",
   },
   buttonContainer: {
     position: "absolute",

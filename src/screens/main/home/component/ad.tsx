@@ -9,16 +9,13 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { FONTS, RADIUS, THEME } from "../../../../theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const GAP = 18;
-const CARD_WIDTH = SCREEN_WIDTH - GAP;
-
-const BRAND = "#1B3710";
-const BRAND_DEEP = "#122808";
-const INK = "#141613";
-const MUTED = "#6B7268";
+// Home sections are inset 16px on each side
+const CARD_WIDTH = SCREEN_WIDTH - 32;
+const CARD_GAP = 10;
 
 type PromoCard = {
   id: string;
@@ -27,20 +24,28 @@ type PromoCard = {
   subtitle: string;
   cta: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  /** Spine + accent color for this offer */
-  tint: string;
+  /** Card fill */
+  bg: string;
+  /** Text + icon color on that fill */
+  fg: string;
+  /** CTA button fill */
+  ctaBg: string;
+  ctaFg: string;
   screen?: string;
 };
 
 const PROMOS: PromoCard[] = [
   {
     id: "refer",
-    eyebrow: "EARN WITH DEPAY",
+    eyebrow: "EARN REWARDS",
     title: "Invite friends, get rewarded",
     subtitle: "Earn a bonus for every friend who joins and transacts.",
     cta: "Refer now",
     icon: "gift-outline",
-    tint: "#E8862E", // warm amber
+    bg: THEME.surface,
+    fg: THEME.text,
+    ctaBg: THEME.primary,
+    ctaFg: THEME.onPrimary,
     screen: "Refer",
   },
   {
@@ -50,7 +55,10 @@ const PROMOS: PromoCard[] = [
     subtitle: "MTN, Airtel, Glo & 9mobile at the best rates.",
     cta: "Buy data",
     icon: "wifi",
-    tint: "#2E7CE8", // blue
+    bg: THEME.primaryDeep,
+    fg: THEME.onPrimary,
+    ctaBg: THEME.surface,
+    ctaFg: THEME.text,
     screen: "Airtime",
   },
   {
@@ -60,7 +68,10 @@ const PROMOS: PromoCard[] = [
     subtitle: "All DisCos supported. Token delivered instantly.",
     cta: "Pay a bill",
     icon: "lightning-bolt",
-    tint: BRAND, // brand green stays on one card as an accent only
+    bg: THEME.primary,
+    fg: THEME.onPrimary,
+    ctaBg: THEME.surface,
+    ctaFg: THEME.primary,
     screen: "Electricity",
   },
 ];
@@ -123,47 +134,39 @@ const Ad = () => {
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={() => handlePress(item)}
-        style={styles.card}
+        style={[
+          styles.card,
+          { backgroundColor: item.bg },
+          item.bg === THEME.surface && styles.cardBordered,
+        ]}
       >
-        {/* COLORED SPINE */}
-        <View style={[styles.spine, { backgroundColor: item.tint }]} />
-
-        {/* ICON */}
-        <View style={[styles.iconBox, { backgroundColor: `${item.tint}14` }]}>
-          <MaterialCommunityIcons
-            name={item.icon}
-            size={24}
-            color={item.tint}
-          />
+        <View style={[styles.iconCircle, { borderColor: item.fg }]}>
+          <MaterialCommunityIcons name={item.icon} size={18} color={item.fg} />
         </View>
 
-        {/* TEXT */}
         <View style={styles.textBlock}>
-          <Text style={[styles.eyebrow, { color: item.tint }]}>
+          <Text style={[styles.eyebrow, { color: item.fg }]}>
             {item.eyebrow}
           </Text>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={[styles.title, { color: item.fg }]} numberOfLines={1}>
             {item.title}
           </Text>
-          <Text style={styles.subtitle} numberOfLines={2}>
+          <Text
+            style={[styles.subtitle, { color: item.fg }]}
+            numberOfLines={2}
+          >
             {item.subtitle}
           </Text>
-        </View>
 
-        {/* DOTTED DIVIDER + CTA */}
-        <View style={styles.ctaColumn}>
-          <View style={styles.dottedDivider} />
-          <View style={styles.ctaBlock}>
-            <View style={[styles.ctaCircle, { backgroundColor: item.tint }]}>
-              <MaterialCommunityIcons
-                name="arrow-right"
-                size={16}
-                color="#FFFFFF"
-              />
-            </View>
-            <Text style={[styles.ctaText, { color: item.tint }]}>
+          <View style={[styles.cta, { backgroundColor: item.ctaBg }]}>
+            <Text style={[styles.ctaText, { color: item.ctaFg }]}>
               {item.cta}
             </Text>
+            <MaterialCommunityIcons
+              name="arrow-right"
+              size={14}
+              color={item.ctaFg}
+            />
           </View>
         </View>
       </TouchableOpacity>
@@ -195,10 +198,7 @@ const Ad = () => {
             key={i}
             style={[
               styles.dot,
-              currentIndex === i && [
-                styles.dotActive,
-                { backgroundColor: PROMOS[i].tint },
-              ],
+              currentIndex === i && styles.dotActive,
             ]}
           />
         ))}
@@ -214,89 +214,63 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
   },
   card: {
-    width: CARD_WIDTH - GAP,
-    minHeight: 108,
-    borderRadius: 18,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#ECEFEA",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingRight: 14,
+    width: CARD_WIDTH - CARD_GAP,
+    minHeight: 136,
+    borderRadius: RADIUS.xl,
     overflow: "hidden",
-    shadowColor: BRAND_DEEP,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2,
+    padding: 18,
   },
-  spine: {
-    width: 5,
-    alignSelf: "stretch",
-    borderTopLeftRadius: 18,
-    borderBottomLeftRadius: 18,
+  cardBordered: {
+    borderWidth: 1,
+    borderColor: THEME.border,
   },
-  iconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 13,
+  iconCircle: {
+    position: "absolute",
+    top: 18,
+    right: 18,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    opacity: 0.8,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 13,
   },
   textBlock: {
-    flex: 1,
-    marginLeft: 12,
-    paddingVertical: 14,
+    width: "78%",
   },
   eyebrow: {
-    fontSize: 9.5,
-    fontWeight: "800",
-    letterSpacing: 1.1,
-    marginBottom: 3,
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    letterSpacing: 1.4,
+    opacity: 0.7,
+    marginBottom: 6,
   },
   title: {
-    fontSize: 14.5,
-    fontWeight: "800",
-    color: INK,
-    letterSpacing: -0.2,
-    marginBottom: 3,
+    fontSize: 17,
+    fontFamily: FONTS.bold,
+    letterSpacing: -0.3,
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 11.5,
-    lineHeight: 15,
-    color: MUTED,
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    lineHeight: 16,
+    opacity: 0.75,
   },
-  ctaColumn: {
+  cta: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "stretch",
-  },
-  dottedDivider: {
-    width: 1,
-    alignSelf: "stretch",
-    marginVertical: 14,
-    marginRight: 12,
-    borderLeftWidth: 1,
-    borderColor: "#DDE3DA",
-    borderStyle: "dashed",
-  },
-  ctaBlock: {
-    alignItems: "center",
-    gap: 5,
-    width: 58,
-  },
-  ctaCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignSelf: "flex-start",
+    gap: 6,
+    marginTop: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: RADIUS.pill,
   },
   ctaText: {
-    fontSize: 10.5,
-    fontWeight: "700",
-    textAlign: "center",
+    fontSize: 12,
+    fontFamily: FONTS.bold,
   },
   pagination: {
     flexDirection: "row",
@@ -309,11 +283,12 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#DCDCE0",
+    backgroundColor: THEME.primarySoft,
   },
   dotActive: {
     width: 22,
     height: 6,
     borderRadius: 3,
+    backgroundColor: THEME.primary,
   },
 });

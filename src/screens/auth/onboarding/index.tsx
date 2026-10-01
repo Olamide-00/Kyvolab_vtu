@@ -17,8 +17,8 @@ import Text from "../../../components/common/txt";
 
 const { width, height } = Dimensions.get("window");
 
-const BRAND = "#1B3710";
-const ACCENT = "#9EE870"; // bright lime accent that pops on dark imagery
+const BRAND = "#111111";
+const ACCENT = "#D0D0D0"; // bright lime accent that pops on dark imagery
 
 const SEGMENT_WIDTH = 32;
 const SEGMENT_GAP = 8;
@@ -196,7 +196,7 @@ const Onboarding = () => {
         pointerEvents="none"
       />
       <LinearGradient
-        colors={["transparent", "rgba(6,14,4,0.55)", "rgba(6,14,4,0.96)"]}
+        colors={["transparent", "rgba(12,12,12,0.55)", "rgba(12,12,12,0.96)"]}
         locations={[0, 0.45, 1]}
         style={styles.bottomGradient}
         pointerEvents="none"
@@ -304,7 +304,7 @@ export default Onboarding;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#060E04",
+    backgroundColor: "#0A0A0A",
   },
   topGradient: {
     position: "absolute",

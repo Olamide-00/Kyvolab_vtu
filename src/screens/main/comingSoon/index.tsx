@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#F0E6FF",
+    backgroundColor: "#EAEAEA",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 30,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 40,
     borderLeftWidth: 4,
-    borderLeftColor: "#7C4DFF",
+    borderLeftColor: "#111111",
   },
   infoText: {
     fontSize: 14,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   backButton: {
-    backgroundColor: "#7C4DFF",
+    backgroundColor: "#111111",
     paddingVertical: 16,
     paddingHorizontal: 60,
     borderRadius: 10,

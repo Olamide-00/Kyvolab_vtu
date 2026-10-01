@@ -3,10 +3,12 @@ import React from "react";
 import {
   Text as RNText,
   TextStyle,
+  StyleProp,
   TextProps as RNTextProps,
   Dimensions,
   PixelRatio,
 } from "react-native";
+import { FONTS, THEME } from "../../theme";
 
 export type TextVariant = "regular" | "bold" | "semibold" | "light";
 export type TextSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
@@ -17,7 +19,7 @@ export interface TextProps extends RNTextProps {
   variant?: TextVariant;
   color?: string;
   center?: boolean;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
 }
 
 const BASE_WIDTH = 375;
@@ -41,17 +43,17 @@ const sizeMap: Record<TextSize, number> = {
 };
 
 const variantMap: Record<TextVariant, TextStyle> = {
-  regular: { fontFamily: "Tinos-Regular" },
-  bold: { fontFamily: "Tinos-Bold" },
-  semibold: { fontFamily: "Tinos-Bold" },
-  light: { fontFamily: "Tinos-Regular" },
+  regular: { fontFamily: FONTS.regular },
+  bold: { fontFamily: FONTS.bold },
+  semibold: { fontFamily: FONTS.semibold },
+  light: { fontFamily: FONTS.regular },
 };
 
 export const Text: React.FC<TextProps> = ({
   children,
   size = "md",
   variant = "regular",
-  color = "#000000",
+  color = THEME.text,
   center = false,
   style,
   ...rest
@@ -76,7 +78,7 @@ export const TextWithFontFamily: React.FC<TextWithFontFamilyProps> = ({
   children,
   size = "md",
   variant = "regular",
-  color = "#000000",
+  color = THEME.text,
   center = false,
   fontFamily,
   style,

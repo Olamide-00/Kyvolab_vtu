@@ -1,6 +1,7 @@
 import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 import React from "react";
 import Text from "./txt";
+import { RADIUS, THEME } from "../../theme";
 
 interface ItemProps {
   label: string;
@@ -81,10 +82,8 @@ const styles = StyleSheet.create({
     minHeight: 36,
     paddingVertical: 6,
     paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: "#F9F9FB",
-    borderWidth: 1,
-    borderColor: "#EFEFEF",
+    borderRadius: RADIUS.sm,
+    backgroundColor: THEME.primaryTint,
   },
   reverse: {
     flexDirection: "row-reverse",
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   labelText: {
-    color: "#8A8A8E", // muted label tone
+    color: THEME.textMuted,
     letterSpacing: 0.2,
   },
 
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     marginTop: 10, // vertically center with text baseline
     borderStyle: "dashed",
     borderWidth: 1,
-    borderColor: "#DCDCE0",
+    borderColor: THEME.primarySoft,
   },
 
   valueWrapper: {
@@ -120,7 +119,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     textAlign: "right",
-    color: "#1A1A1E", // strong value tone
+    color: THEME.text,
     letterSpacing: -0.2,
   },
 });

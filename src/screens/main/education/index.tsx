@@ -1,77 +1,27 @@
-import { View, TouchableOpacity, StyleSheet, Animated } from "react-native";
-import React, { useRef } from "react";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import React from "react";
 import CommonHeader from "../../../components/ui/commonHeader";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Text from "../../../components/common/txt";
-
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#ECEFEA";
+import { FONTS, RADIUS, THEME } from "../../../theme";
 
 const examBoards = [
   {
     id: "1",
     label: "JAMB",
+    description: "UTME & Direct Entry registration PIN",
     screen: "Jamb",
     icon: "school-outline" as const,
   },
   {
     id: "2",
     label: "WAEC",
+    description: "Result checker PIN, delivered instantly",
     screen: "Waec",
     icon: "document-text-outline" as const,
   },
 ];
-
-const ExamCard = ({
-  board,
-  onPress,
-}: {
-  board: (typeof examBoards)[number];
-  onPress: () => void;
-}) => {
-  const scale = useRef(new Animated.Value(1)).current;
-
-  const pressIn = () =>
-    Animated.spring(scale, {
-      toValue: 0.96,
-      useNativeDriver: true,
-      speed: 40,
-      bounciness: 0,
-    }).start();
-
-  const pressOut = () =>
-    Animated.spring(scale, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 6,
-    }).start();
-
-  return (
-    <Animated.View style={[styles.cardWrap, { transform: [{ scale }] }]}>
-      <TouchableOpacity
-        style={styles.card}
-        onPress={onPress}
-        onPressIn={pressIn}
-        onPressOut={pressOut}
-        activeOpacity={0.85}
-      >
-        <View style={styles.iconContainer}>
-          <Ionicons name={board.icon} size={28} color={BRAND} />
-        </View>
-        <Text style={styles.cardLabel}>{board.label}</Text>
-        <View style={styles.subPill}>
-          <Text style={styles.cardSub}>Buy PIN</Text>
-          <Ionicons name="arrow-forward" size={11} color={BRAND} />
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
 
 const Education = () => {
   const navigation = useNavigation<any>();
@@ -80,18 +30,43 @@ const Education = () => {
     <View style={styles.root}>
       <CommonHeader title="Education" back />
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Select Exam Board</Text>
-        <Text style={styles.sectionSubtitle}>
-          Choose the exam board you want to purchase a pin for
+        <Text style={styles.title}>Which exam?</Text>
+        <Text style={styles.subtitle}>
+          Buy a PIN and we'll send it to your phone.
         </Text>
 
-        <View style={styles.grid}>
-          {examBoards.map((board) => (
-            <ExamCard
+        <View style={styles.list}>
+          {examBoards.map((board, i) => (
+            <TouchableOpacity
               key={board.id}
-              board={board}
+              style={[styles.row, i === 0 && styles.rowDark]}
               onPress={() => navigation.navigate(board.screen)}
-            />
+              activeOpacity={0.85}
+            >
+              <View style={[styles.icon, i === 0 && styles.iconDark]}>
+                <Ionicons
+                  name={board.icon}
+                  size={24}
+                  color={i === 0 ? THEME.primary : THEME.onPrimary}
+                />
+              </View>
+              <View style={styles.rowText}>
+                <Text style={[styles.rowTitle, i === 0 && styles.onDark]}>
+                  {board.label}
+                </Text>
+                <Text
+                  style={[styles.rowDesc, i === 0 && styles.onDarkMuted]}
+                  numberOfLines={2}
+                >
+                  {board.description}
+                </Text>
+              </View>
+              <Ionicons
+                name="arrow-forward"
+                size={20}
+                color={i === 0 ? THEME.onPrimary : THEME.text}
+              />
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -104,73 +79,70 @@ export default Education;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.bg,
   },
   container: {
-    flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingTop: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
-    marginBottom: 4,
+  title: {
+    fontSize: 28,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+    letterSpacing: -0.6,
   },
-  sectionSubtitle: {
-    fontSize: 13,
-    fontFamily: "Poppins-Regular",
-    color: MUTED,
-    marginBottom: 24,
+  subtitle: {
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+    marginTop: 4,
   },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 14,
-  },
-  cardWrap: {
-    width: "47%",
-  },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    paddingVertical: 22,
-    paddingHorizontal: 16,
-    alignItems: "center",
+  list: {
+    marginTop: 24,
     gap: 10,
-    borderWidth: 1.5,
-    borderColor: BORDER,
-    shadowColor: BRAND,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 1,
   },
-  iconContainer: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
-    backgroundColor: LIGHT_GREEN,
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    padding: 18,
+    minHeight: 96,
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  rowDark: {
+    backgroundColor: THEME.primary,
+    borderColor: THEME.primary,
+  },
+  icon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: THEME.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  cardLabel: {
-    fontSize: 15,
-    fontFamily: "Poppins-SemiBold",
-    color: INK,
+  iconDark: {
+    backgroundColor: THEME.surface,
   },
-  subPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: LIGHT_GREEN,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
+  rowText: {
+    flex: 1,
+    gap: 3,
   },
-  cardSub: {
-    fontSize: 11,
-    fontFamily: "Poppins-SemiBold",
-    color: BRAND,
+  rowTitle: {
+    fontSize: 20,
+    fontFamily: FONTS.bold,
+    color: THEME.text,
+    letterSpacing: -0.3,
   },
+  rowDesc: {
+    fontSize: 13,
+    fontFamily: FONTS.regular,
+    color: THEME.textMuted,
+    lineHeight: 18,
+  },
+  onDark: { color: THEME.onPrimary },
+  onDarkMuted: { color: THEME.onPrimaryMuted },
 });

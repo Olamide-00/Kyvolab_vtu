@@ -5,32 +5,11 @@ import {
   StyleSheet,
   Vibration,
   Animated,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Text from "../common/txt";
-import { COLORS } from "../../constants/Colors";
-
-// Fallbacks in case constants/Colors.ts doesn't export these exact
-// keys — swap for COLORS.ink / COLORS.muted / COLORS.border if you
-// already have them defined, so this stays in lockstep with the
-// rest of the app's palette instead of drifting into its own.
-const INK = (COLORS as any).ink ?? "#141613";
-const MUTED = (COLORS as any).muted ?? "#6B7268";
-const BORDER = (COLORS as any).border ?? "#E5E8E3";
-const SURFACE = (COLORS as any).surface ?? "#F7F8F5";
-
-const LETTERS: Record<string, string> = {
-  "1": "",
-  "2": "ABC",
-  "3": "DEF",
-  "4": "GHI",
-  "5": "JKL",
-  "6": "MNO",
-  "7": "PQRS",
-  "8": "TUV",
-  "9": "WXYZ",
-  "0": "",
-};
+import { FONTS, THEME } from "../../theme";
 
 interface CustomKeypadProps {
   onKeyPress: (key: string) => void;
@@ -42,55 +21,59 @@ interface CustomKeypadProps {
   submitColor?: string;
   vibrate?: boolean;
   showSubmit?: boolean;
+  disabled?: boolean;
 }
 
-// Every key manages its own tiny press animation — a shared
-// TouchableOpacity/activeOpacity gives every key the exact same
-// flat opacity dip, which is what made the original feel generic.
-// A per-key spring gives each press real, tactile weight.
+// Every key manages its own press animation: a quick shrink plus a
+// grey fill, so presses feel tactile without any colour.
 function AnimatedKey({
   onPress,
   children,
   style,
   vibrate,
+  disabled,
 }: {
   onPress: () => void;
   children: React.ReactNode;
   style?: any;
   vibrate: boolean;
+  disabled?: boolean;
 }) {
-  const scale = useRef(new Animated.Value(1)).current;
+  const press = useRef(new Animated.Value(0)).current;
 
-  const pressIn = () => {
-    Animated.spring(scale, {
-      toValue: 0.9,
-      speed: 40,
-      bounciness: 0,
-      useNativeDriver: true,
+  const animate = (to: number) =>
+    Animated.spring(press, {
+      toValue: to,
+      speed: to ? 40 : 18,
+      bounciness: to ? 0 : 8,
+      useNativeDriver: false, // backgroundColor is animated
     }).start();
-  };
-
-  const pressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      speed: 18,
-      bounciness: 9,
-      useNativeDriver: true,
-    }).start();
-  };
 
   const handlePress = () => {
+    if (disabled) return;
     if (vibrate) Vibration.vibrate(8);
     onPress();
   };
 
+  const scale = press.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.92],
+  });
+  const backgroundColor = press.interpolate({
+    inputRange: [0, 1],
+    outputRange: [THEME.surface, THEME.accent],
+  });
+
   return (
     <TouchableWithoutFeedback
-      onPressIn={pressIn}
-      onPressOut={pressOut}
+      onPressIn={() => animate(1)}
+      onPressOut={() => animate(0)}
       onPress={handlePress}
+      disabled={disabled}
     >
-      <Animated.View style={[style, { transform: [{ scale }] }]}>
+      <Animated.View
+        style={[style, { backgroundColor, transform: [{ scale }] }]}
+      >
         {children}
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -104,9 +87,10 @@ const CustomKeypad: React.FC<CustomKeypadProps> = ({
   showForgotPin = true,
   onForgotPin,
   submitIcon = "arrow-forward",
-  submitColor = COLORS.brand,
+  submitColor = THEME.primary,
   vibrate = true,
   showSubmit = true,
+  disabled = false,
 }) => {
   const renderKey = (value: string) => (
     <AnimatedKey
@@ -114,13 +98,9 @@ const CustomKeypad: React.FC<CustomKeypadProps> = ({
       style={styles.key}
       onPress={() => onKeyPress(value)}
       vibrate={vibrate}
+      disabled={disabled}
     >
       <Text style={styles.keyText}>{value}</Text>
-      {LETTERS[value] ? (
-        <Text style={styles.keyLetters}>{LETTERS[value]}</Text>
-      ) : (
-        <View style={styles.letterSpacer} />
-      )}
     </AnimatedKey>
   );
 
@@ -135,125 +115,92 @@ const CustomKeypad: React.FC<CustomKeypadProps> = ({
       )}
 
       <View style={styles.keypad}>
-        <View style={styles.row}>
-          {renderKey("1")}
-          {renderKey("2")}
-          {renderKey("3")}
-        </View>
+        {[
+          ["1", "2", "3"],
+          ["4", "5", "6"],
+          ["7", "8", "9"],
+        ].map((row) => (
+          <View key={row.join("")} style={styles.row}>
+            {row.map(renderKey)}
+          </View>
+        ))}
 
         <View style={styles.row}>
-          {renderKey("4")}
-          {renderKey("5")}
-          {renderKey("6")}
-        </View>
-
-        <View style={styles.row}>
-          {renderKey("7")}
-          {renderKey("8")}
-          {renderKey("9")}
-        </View>
-
-        <View style={styles.row}>
-          <AnimatedKey
-            style={[styles.key, styles.utilityKey]}
-            onPress={onDelete}
-            vibrate={vibrate}
-          >
-            <Ionicons name="backspace-outline" size={22} color={MUTED} />
-          </AnimatedKey>
-
-          {renderKey("0")}
-
           {showSubmit ? (
             <AnimatedKey
-              style={[
-                styles.key,
-                styles.submitKey,
-                { backgroundColor: submitColor },
-              ]}
+              style={[styles.key, { backgroundColor: submitColor }]}
               onPress={onSubmit}
               vibrate={vibrate}
+              disabled={disabled}
             >
-              <Ionicons name={submitIcon} size={22} color="#fff" />
+              <Ionicons name={submitIcon} size={22} color={THEME.onPrimary} />
             </AnimatedKey>
           ) : (
             // Keeps the grid aligned when there's nothing to submit
-            // (e.g. a PIN screen that auto-submits at 4 digits) —
-            // an empty, non-interactive slot rather than a button
-            // that would silently do nothing if tapped.
-            <View style={styles.key} pointerEvents="none" />
+            // (e.g. a PIN screen that auto-submits at 4 digits)
+            <View style={[styles.key, styles.blank]} pointerEvents="none" />
           )}
+
+          {renderKey("0")}
+
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (disabled) return;
+              if (vibrate) Vibration.vibrate(8);
+              onDelete();
+            }}
+          >
+            <View style={[styles.key, styles.blank]}>
+              <Ionicons name="backspace-outline" size={24} color={THEME.text} />
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </View>
     </View>
   );
 };
 
-const KEY_SIZE = 72;
+// Slightly smaller keys on short screens (iPhone SE-class)
+const KEY_SIZE = Dimensions.get("window").height < 700 ? 62 : 72;
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    paddingHorizontal: 24,
+    paddingHorizontal: 28,
   },
   forgotPinContainer: {
     alignItems: "center",
-    marginBottom: 28,
+    marginBottom: 24,
   },
   forgotPinText: {
-    fontSize: 14.5,
-    fontFamily: "Poppins-Medium",
-    color: MUTED,
-    textDecorationLine: "underline",
-    textDecorationColor: BORDER,
+    fontSize: 14,
+    fontFamily: FONTS.semibold,
+    color: THEME.textSecondary,
   },
   keypad: {
     width: "100%",
     alignItems: "center",
+    gap: 14,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    marginBottom: 18,
   },
   key: {
     width: KEY_SIZE,
     height: KEY_SIZE,
     borderRadius: KEY_SIZE / 2,
-    backgroundColor: SURFACE,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: BORDER,
+  },
+  blank: {
+    backgroundColor: "transparent",
   },
   keyText: {
-    fontSize: 25,
-    fontFamily: "Poppins-Medium",
-    color: INK,
-    lineHeight: 30,
-  },
-  keyLetters: {
-    fontSize: 9,
-    fontFamily: "Poppins-Medium",
-    color: MUTED,
-    letterSpacing: 1.5,
-    marginTop: 1,
-  },
-  letterSpacer: {
-    height: 12,
-  },
-  utilityKey: {
-    backgroundColor: "transparent",
-    borderWidth: 0,
-  },
-  submitKey: {
-    borderWidth: 0,
-    shadowColor: COLORS.brand,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 4,
+    fontSize: 26,
+    fontFamily: FONTS.semibold,
+    color: THEME.text,
   },
 });
 

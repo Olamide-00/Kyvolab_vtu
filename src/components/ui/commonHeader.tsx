@@ -1,22 +1,33 @@
-import { StyleSheet, View, TouchableOpacity, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Platform,
+  StatusBar,
+} from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "../common/txt";
-import { ArrowLeft2 } from "iconsax-react-native";
+import { ArrowLeft } from "iconsax-react-native";
 import { useNavigation } from "@react-navigation/native";
-
-const BRAND = "#1B3710";
-const LIGHT_GREEN = "#EAF3E9";
-const INK = "#141613";
+import { FONTS, RADIUS, THEME } from "../../theme";
 
 interface HeaderProps {
   title: string;
   back?: boolean;
   onBackPress?: () => void;
   right?: React.ReactNode;
+  /** Optional line under the title */
+  subtitle?: string;
 }
 
-const CommonHeader = ({ title, back, onBackPress, right }: HeaderProps) => {
+const CommonHeader = ({
+  title,
+  back,
+  onBackPress,
+  right,
+  subtitle,
+}: HeaderProps) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -29,10 +40,12 @@ const CommonHeader = ({ title, back, onBackPress, right }: HeaderProps) => {
   };
 
   const topPadding =
-    insets.top > 0 ? insets.top + 6 : Platform.OS === "android" ? 14 : 6;
+    insets.top > 0 ? insets.top + 4 : Platform.OS === "android" ? 16 : 8;
 
   return (
     <View style={[styles.container, { paddingTop: topPadding }]}>
+      <StatusBar barStyle="dark-content" />
+
       <View style={styles.content}>
         {back ? (
           <TouchableOpacity
@@ -41,15 +54,22 @@ const CommonHeader = ({ title, back, onBackPress, right }: HeaderProps) => {
             activeOpacity={0.7}
             hitSlop={8}
           >
-            <ArrowLeft2 size={20} color={INK} />
+            <ArrowLeft size={20} color={THEME.text} />
           </TouchableOpacity>
         ) : (
           <View style={styles.sideSlot} />
         )}
 
-        <Text variant="bold" size="lg" style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
 
         <View style={styles.sideSlot}>{right ?? null}</View>
       </View>
@@ -61,10 +81,9 @@ export default CommonHeader;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.bg,
     paddingHorizontal: 16,
     paddingBottom: 10,
-    // no border, no shadow — whitespace does the separating
   },
   content: {
     flexDirection: "row",
@@ -75,8 +94,10 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: LIGHT_GREEN,
+    borderRadius: RADIUS.md,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -86,11 +107,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
+  titleWrap: {
     flex: 1,
-    color: INK,
+    alignItems: "center",
+  },
+  title: {
+    color: THEME.text,
     textAlign: "center",
     fontSize: 17,
-    letterSpacing: -0.3,
+    fontFamily: FONTS.bold,
+    letterSpacing: -0.2,
+  },
+  subtitle: {
+    color: THEME.textMuted,
+    fontSize: 12.5,
+    fontFamily: FONTS.regular,
+    marginTop: 1,
   },
 });

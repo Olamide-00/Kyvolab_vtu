@@ -15,12 +15,12 @@ import CommonHeader from "../../../components/ui/commonHeader";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const BRAND = "#1B3710";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
-const ERROR_RED = "#D92D20";
+const BRAND = "#111111";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#E7E7E7";
+const FIELD_BG = "#FBFBFB";
+const ERROR_RED = "#515151";
 
 const PIN_LENGTH = 4;
 const ACCESSORY_ID = "pinKeyboardAccessory";
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: "#F5F7F4",
+    backgroundColor: "#F6F6F6",
     borderTopWidth: 1,
     borderTopColor: BORDER,
   },

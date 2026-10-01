@@ -21,12 +21,12 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     marginBottom: hp("1%"),
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 20,
   },
   optionsContainer: {
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     borderRadius: 12,
     paddingVertical: hp("2%"),
     paddingHorizontal: wp("4%"),
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -64,11 +64,11 @@ export const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#1F2937",
+    color: "#282828",
   },
   optionSubtitle: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 18,
   },
 });

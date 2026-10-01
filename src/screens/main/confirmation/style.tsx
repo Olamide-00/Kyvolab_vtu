@@ -1,18 +1,11 @@
 // style.ts
 import { StyleSheet } from "react-native";
-
-const BRAND = "#1B3710";
-const BRAND_TINT = "#EAF0E6";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
-const DIVIDER = "#EDEFEA";
+import { FONTS, RADIUS, SHADOW, THEME } from "../../../theme";
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.bg,
   },
   container: {
     flex: 1,
@@ -21,21 +14,21 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 24,
     paddingBottom: 24,
   },
 
   // ── Icon + heading ──
   iconSection: {
     alignItems: "center",
-    marginBottom: 28,
+    marginBottom: 24,
   },
   iconRing: {
     width: 72,
     height: 72,
-    borderRadius: 36,
-    backgroundColor: BRAND_TINT,
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.primarySoft,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
@@ -43,48 +36,56 @@ export const styles = StyleSheet.create({
   iconContainer: {
     width: 52,
     height: 52,
-    borderRadius: 26,
-    backgroundColor: "#FFFFFF",
+    borderRadius: RADIUS.lg,
+    backgroundColor: THEME.surface,
     alignItems: "center",
     justifyContent: "center",
   },
   reviewText: {
-    color: INK,
+    color: THEME.text,
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   reviewSubtext: {
-    color: MUTED,
+    color: THEME.textMuted,
     fontSize: 14,
+    fontFamily: FONTS.regular,
     textAlign: "center",
   },
 
   // ── Details card ──
   detailsCard: {
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: BORDER,
-    backgroundColor: FIELD_BG,
-    padding: 24,
+    borderRadius: RADIUS.xl,
+    backgroundColor: THEME.surface,
+    padding: 12,
+    ...SHADOW.card,
   },
 
+  // Indigo "ticket" holding the total
   amountSection: {
     alignItems: "center",
     marginBottom: 20,
+    paddingVertical: 22,
+    borderRadius: RADIUS.lg,
+    backgroundColor: THEME.primary,
+    overflow: "hidden",
   },
   amountLabel: {
-    color: MUTED,
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1,
+    color: THEME.onPrimaryMuted,
+    fontSize: 11,
+    fontFamily: FONTS.bold,
+    letterSpacing: 1.4,
     marginBottom: 6,
   },
+  amountLoader: {
+    marginVertical: 12,
+  },
   amountValue: {
-    color: INK,
+    color: THEME.onPrimary,
     fontSize: 34,
-    fontWeight: "800",
+    fontFamily: FONTS.bold,
     letterSpacing: -0.5,
     marginBottom: 10,
   },
@@ -92,75 +93,95 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: BRAND_TINT,
+    backgroundColor: THEME.accent,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 20,
+    borderRadius: RADIUS.pill,
   },
   amountBadgeText: {
-    color: BRAND,
+    color: THEME.primaryDarkest,
     fontSize: 11,
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
   },
 
   dividerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 12,
+    marginHorizontal: 8,
     gap: 10,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: DIVIDER,
+    backgroundColor: THEME.border,
   },
   dividerLabel: {
-    color: MUTED,
+    color: THEME.textMuted,
     fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
+    fontFamily: FONTS.bold,
+    letterSpacing: 1.2,
   },
 
   itemContainer: {
-    marginBottom: 16,
+    gap: 6,
+    marginBottom: 12,
   },
 
   noteCard: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 8,
-    backgroundColor: BRAND_TINT,
-    borderRadius: 12,
+    backgroundColor: THEME.accentSoft,
+    borderRadius: RADIUS.md,
     padding: 12,
   },
   noteText: {
     flex: 1,
-    color: BRAND,
+    color: THEME.primaryDarkest,
     fontSize: 12.5,
     lineHeight: 18,
+    fontFamily: FONTS.regular,
+  },
+  chargeErrorCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    backgroundColor: THEME.errorSoft,
+    borderRadius: RADIUS.md,
+    padding: 12,
+    marginTop: 8,
+  },
+  chargeErrorText: {
+    flex: 1,
+    color: THEME.error,
+    fontSize: 12.5,
+    lineHeight: 18,
+    fontFamily: FONTS.regular,
   },
 
   // ── Fixed bottom actions ──
   actions: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: DIVIDER,
-    backgroundColor: "#FFFFFF",
+    paddingBottom: 24,
+    backgroundColor: THEME.surface,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    ...SHADOW.raised,
   },
   btn: {
     height: 56,
-    borderRadius: 14,
-    backgroundColor: BRAND,
+    borderRadius: RADIUS.lg,
+    backgroundColor: THEME.primary,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   btnText: {
-    color: "#FFFFFF",
-    fontSize: 16.5,
-    fontWeight: "700",
+    color: THEME.onPrimary,
+    fontSize: 16,
+    fontFamily: FONTS.bold,
   },
   cancelButton: {
     height: 48,
@@ -168,8 +189,8 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cancelButtonText: {
-    color: MUTED,
+    color: THEME.textSecondary,
     fontSize: 14.5,
-    fontWeight: "600",
+    fontFamily: FONTS.semibold,
   },
 });

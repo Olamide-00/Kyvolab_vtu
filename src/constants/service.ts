@@ -11,7 +11,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "IE",
-    color: "#E2231A",
+    color: "#4B4B4B",
     biller: "ikeja-electric",
   },
   {
@@ -21,7 +21,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "EKO",
-    color: "#00489A",
+    color: "#3F3F3F",
     biller: "eko-electric",
   },
   {
@@ -31,7 +31,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "AE",
-    color: "#0B7A3B",
+    color: "#5E5E5E",
     biller: "abuja-electric",
   },
   {
@@ -41,7 +41,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "IB",
-    color: "#F7941D",
+    color: "#A0A0A0",
     biller: "ibadan-electric",
   },
   {
@@ -51,7 +51,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "EN",
-    color: "#7A1FA2",
+    color: "#3C3C3C",
     biller: "enugu-electric",
   },
   {
@@ -61,7 +61,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "PH",
-    color: "#00754A",
+    color: "#595959",
     biller: "portharcourt-electric",
   },
   {
@@ -71,7 +71,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "KN",
-    color: "#1565C0",
+    color: "#5B5B5B",
     biller: "kano-electric",
   },
   {
@@ -81,7 +81,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "KD",
-    color: "#5D4037",
+    color: "#464646",
     biller: "kaduna-electric",
   },
   {
@@ -91,7 +91,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "JOS",
-    color: "#00838F",
+    color: "#686868",
     biller: "jos-electric",
   },
   {
@@ -101,7 +101,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "BN",
-    color: "#C62828",
+    color: "#4A4A4A",
     biller: "benin-electric",
   },
   {
@@ -111,7 +111,7 @@ export const services = [
     screen: "Electricity",
     image: null,
     short: "YL",
-    color: "#6A1B9A",
+    color: "#353535",
     biller: "yola-electric",
   },
 

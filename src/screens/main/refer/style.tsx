@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#F5F3FF",
+    backgroundColor: "#F4F4F4",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   },
   referDescription: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 18,
   },
   bold: {
@@ -73,12 +73,12 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   codeBox: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E7E7E7",
     borderStyle: "dashed",
     flex: 1,
   },
@@ -120,7 +120,7 @@ export const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 13,
-    color: "#6B7280",
+    color: "#727272",
     marginBottom: 8,
   },
   statValue: {
@@ -131,7 +131,7 @@ export const styles = StyleSheet.create({
   },
   statSubLabel: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: "#A2A2A2",
   },
   earningSection: {
     backgroundColor: COLORS.white,
@@ -154,7 +154,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: "#F4F4F4",
   },
   earningTitle: {
     fontSize: 15,
@@ -168,7 +168,7 @@ export const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 13,
-    color: "#9CA3AF",
+    color: "#A2A2A2",
   },
   earningList: {
     marginTop: 12,
@@ -183,18 +183,18 @@ export const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#FAFAFA",
     alignItems: "center",
     justifyContent: "center",
   },
   greenBg: {
-    backgroundColor: "#ECFDF5",
+    backgroundColor: "#F9F9F9",
   },
   blueBg: {
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#F5F5F5",
   },
   redBg: {
-    backgroundColor: "#FEF2F2",
+    backgroundColor: "#F5F5F5",
   },
   earningIcon: {
     // Icon styling handled by Ionicons
@@ -210,7 +210,7 @@ export const styles = StyleSheet.create({
   },
   earningDate: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: "#A2A2A2",
   },
   shareButton: {
     backgroundColor: COLORS.brand,

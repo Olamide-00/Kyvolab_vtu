@@ -10,12 +10,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import Text from "../../../../components/common/txt";
+import { THEME } from "../../../../theme";
 
-const BRAND = "#1B3710";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
+const BRAND = THEME.primary;
+const INK = THEME.text;
+const MUTED = THEME.textMuted;
+const BORDER = THEME.border;
+const FIELD_BG = THEME.primaryTint;
 
 interface GenderSelectorProps {
   label: string;
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 14,
     height: 56,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: BORDER,
   },
   input: {
@@ -151,17 +152,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   placeholder: {
-    color: "#A8AFA5",
+    color: MUTED,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(18,40,8,0.4)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
   pickerSheet: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: THEME.surface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingBottom: 16,
   },
   pickerHeader: {

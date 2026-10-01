@@ -13,7 +13,7 @@ interface StepperProps {
   showLabel?: boolean;
 }
 
-const TRACK = "#ECEFEA";
+const TRACK = "#EEEEEE";
 
 const Segment: React.FC<{ state: "completed" | "active" | "upcoming" }> = ({
   state,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     marginTop: hp("1%"),
     fontSize: 12.5,
     fontWeight: "600",
-    color: "#6B7268",
+    color: "#707070",
   },
 });
 

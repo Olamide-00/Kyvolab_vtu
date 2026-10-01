@@ -21,12 +21,12 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#1F2937",
+    color: "#282828",
     marginBottom: hp("1%"),
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
     lineHeight: 20,
   },
   otpContainer: {
@@ -38,12 +38,12 @@ export const styles = StyleSheet.create({
   otpInput: {
     flex: 1,
     aspectRatio: 1,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F4F4F4",
     borderRadius: 8,
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
-    color: "#1F2937",
+    color: "#282828",
   },
   resendContainer: {
     flexDirection: "row",
@@ -53,16 +53,16 @@ export const styles = StyleSheet.create({
   },
   resendText: {
     fontSize: 14,
-    color: "#6B7280",
+    color: "#727272",
   },
   resendLink: {
     fontSize: 14,
-    color: "#7C3AED",
+    color: "#111111",
     fontWeight: "500",
   },
   otherMethodsLink: {
     fontSize: 14,
-    color: "#7C3AED",
+    color: "#111111",
     fontWeight: "500",
     textAlign: "center",
   },
@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     gap: hp("1.5%"),
   },
   verifyButton: {
-    backgroundColor: "#C4B5FD",
+    backgroundColor: "#111111",
     borderRadius: 12,
     paddingVertical: hp("2%"),
     alignItems: "center",
@@ -95,6 +95,6 @@ export const styles = StyleSheet.create({
   switchButtonText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#7C3AED",
+    color: "#111111",
   },
 });

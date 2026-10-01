@@ -6,6 +6,7 @@ import AuthNavigation from "./auth";
 import MainNavigation from "./main/mainNavigation";
 import useAuthStore from "../store/userStore";
 import * as SecureStore from "expo-secure-store";
+import { THEME } from "../theme";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -35,8 +36,15 @@ export default function RootNavigation() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#7C4DFF" />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: THEME.bg,
+        }}
+      >
+        <ActivityIndicator size="large" color={THEME.primary} />
       </View>
     );
   }

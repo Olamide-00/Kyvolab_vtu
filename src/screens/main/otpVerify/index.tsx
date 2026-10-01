@@ -29,7 +29,7 @@ const OTPVerify = () => {
                 <Ionicons
                   name="finger-print-outline"
                   size={24}
-                  color="#8B5CF6"
+                  color="#2B2B2B"
                 />
               </View>
               <View style={styles.optionTextContainer}>
@@ -39,7 +39,7 @@ const OTPVerify = () => {
                 </Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <Ionicons name="chevron-forward" size={20} color="#A2A2A2" />
           </TouchableOpacity>
 
           {/* Email Verification */}
@@ -51,7 +51,7 @@ const OTPVerify = () => {
           >
             <View style={styles.optionLeft}>
               <View style={styles.iconContainer}>
-                <Ionicons name="mail-outline" size={24} color="#8B5CF6" />
+                <Ionicons name="mail-outline" size={24} color="#2B2B2B" />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Email Verification</Text>
@@ -60,7 +60,7 @@ const OTPVerify = () => {
                 </Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <Ionicons name="chevron-forward" size={20} color="#A2A2A2" />
           </TouchableOpacity>
         </View>
       </View>

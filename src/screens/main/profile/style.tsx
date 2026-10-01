@@ -28,17 +28,17 @@ export const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#E7E7E7",
     marginRight: 12,
   },
   userInfo: {
     gap: 2,
   },
   accountNumber: {
-    color: "#6B7280",
+    color: "#727272",
   },
   walletBalance: {
-    color: "#6B7280",
+    color: "#727272",
   },
   viewProfileButton: {
     backgroundColor: COLORS.lightGray,
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 15,
-    color: "#EF4444",
+    color: "#686868",
     fontWeight: "500",
   },
 });

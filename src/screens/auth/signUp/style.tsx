@@ -261,7 +261,7 @@ export const styles = StyleSheet.create({
   },
   infoCard: {
     flexDirection: "row",
-    backgroundColor: "#F0E6FF",
+    backgroundColor: "#EAEAEA",
     padding: wp("4%"),
     borderRadius: 12,
     alignItems: "center",
@@ -284,7 +284,7 @@ export const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFE5E5",
+    backgroundColor: "#EBEBEB",
     padding: wp("3%"),
     borderRadius: 8,
     marginBottom: hp("2%"),
@@ -293,7 +293,7 @@ export const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 13,
-    color: "#FF6B6B",
+    color: "#8A8A8A",
     lineHeight: 18,
   },
   disabledButton: {

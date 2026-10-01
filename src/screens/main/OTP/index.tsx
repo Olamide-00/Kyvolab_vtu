@@ -4,7 +4,7 @@ import { styles } from "./style";
 import Text from "../../../components/common/txt";
 import CommonHeader from "../../../components/ui/commonHeader";
 import CustomKeypad from "../../../components/keypad/customKeyPad";
-import { COLORS } from "../../../constants/Colors";
+import { THEME } from "../../../theme";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useVerifyPIN } from "../../../api/hooks/usePIN";
 import { usePayBills } from "../../../api/hooks/useBills";
@@ -272,69 +272,119 @@ const OTP = () => {
     if (!loading) setPin((prev) => prev.slice(0, -1));
   };
 
+  // What's being authorised — shown above the PIN so the user sees the
+  // exact amount and recipient before confirming
+  const payable = Number(expectedTotal ?? amount) || 0;
+  const providerLabel = (serviceID || "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const recipient = phone || billersCode;
+
   return (
     <View style={styles.root}>
-      <CommonHeader title="Transaction PIN" back />
+      <CommonHeader title="Authorise payment" back />
 
       <View style={styles.container}>
-        <View style={styles.desc}>
-          <Text variant="bold" size="2xl" style={styles.heading}>
-            Enter your PIN
+        {/* ── Payment summary ── */}
+        <View style={styles.summary}>
+          <Text style={styles.summaryLabel}>You're paying</Text>
+          <Text style={styles.summaryAmount} numberOfLines={1}>
+            ₦
+            {payable.toLocaleString("en-NG", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Text>
-          <Text size="sm" style={styles.subheading}>
-            Enter your 4-digit PIN to authorise this transaction
-          </Text>
+          {providerLabel ? (
+            <View style={styles.summaryChip}>
+              <Ionicons
+                name="arrow-forward-circle-outline"
+                size={14}
+                color={THEME.textSecondary}
+              />
+              <Text style={styles.summaryChipText} numberOfLines={1}>
+                {providerLabel}
+                {recipient ? ` · ${recipient}` : ""}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
+        {/* ── PIN boxes ── */}
+        <Text style={styles.prompt}>Enter your 4-digit PIN</Text>
         <Animated.View
-          style={[
-            styles.dotContainer,
-            { transform: [{ translateX: shakeAnim }] },
-          ]}
+          style={[styles.boxRow, { transform: [{ translateX: shakeAnim }] }]}
         >
-          {[...Array(maxPinLength)].map((_, index) => (
-            <Animated.View
-              key={index}
-              style={[
-                styles.dot,
-                !showRedDots && index < pin.length && styles.dotFilled,
-                showRedDots && styles.dotError,
-                { transform: [{ scale: dotAnims[index] }] },
-              ]}
-            />
-          ))}
+          {[...Array(maxPinLength)].map((_, index) => {
+            const filled = index < pin.length;
+            const active = index === pin.length && !loading;
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.box,
+                  active && styles.boxActive,
+                  filled && styles.boxFilled,
+                  showRedDots && styles.boxError,
+                ]}
+              >
+                {filled || showRedDots ? (
+                  <Animated.View
+                    style={[
+                      styles.boxDot,
+                      showRedDots && styles.boxDotError,
+                      { transform: [{ scale: dotAnims[index] }] },
+                    ]}
+                  />
+                ) : null}
+              </View>
+            );
+          })}
         </Animated.View>
 
-        {status === "error" && (
+        {status === "error" ? (
           <View style={styles.errorRow}>
             <MaterialCommunityIcons
               name="alert-circle-outline"
-              size={13}
-              color="#EF4444"
+              size={14}
+              color={THEME.onPrimary}
             />
             <Text style={styles.errorText}>{errorMsg}</Text>
           </View>
+        ) : (
+          <Text
+            style={styles.forgot}
+            onPress={() => navigation.navigate("ChangePIN1")}
+          >
+            Forgot PIN?
+          </Text>
         )}
       </View>
 
+      <View style={styles.keypadContainer}>
+        <CustomKeypad
+          onKeyPress={handleKeyPress}
+          onDelete={handleDelete}
+          onSubmit={() => {}}
+          showSubmit={false}
+          showForgotPin={false}
+          disabled={loading}
+          vibrate
+        />
+      </View>
+
+      {/* ── Processing overlay ── */}
       {loading && (
         <Animated.View
           style={[styles.loadingOverlay, { opacity: overlayAnim }]}
         >
-          {displayedStage === "success" ? (
-            <Ionicons
-              name="checkmark-circle"
-              size={40}
-              color="#4ADE80"
-              style={styles.successIcon}
-            />
-          ) : (
-            <ActivityIndicator
-              size="small"
-              color="#FFFFFF"
-              style={styles.spinner}
-            />
-          )}
+          <View style={styles.loadingBadge}>
+            {displayedStage === "success" ? (
+              <Ionicons name="checkmark" size={30} color={THEME.onPrimary} />
+            ) : (
+              <ActivityIndicator size="small" color={THEME.onPrimary} />
+            )}
+          </View>
 
           <Animated.Text
             style={[
@@ -354,20 +404,9 @@ const OTP = () => {
           >
             {displayedStage !== "idle" ? STAGE_LABEL[displayedStage] : ""}
           </Animated.Text>
+          <Text style={styles.loadingHint}>Please don't close the app</Text>
         </Animated.View>
       )}
-
-      <View style={styles.keypadContainer}>
-        <CustomKeypad
-          onKeyPress={handleKeyPress}
-          onDelete={handleDelete}
-          onSubmit={() => {}}
-          showSubmit={false}
-          showForgotPin
-          onForgotPin={() => navigation.navigate("ChangePIN1")}
-          vibrate
-        />
-      </View>
     </View>
   );
 };

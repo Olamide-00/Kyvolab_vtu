@@ -53,7 +53,6 @@ const Confirmation = () => {
   // ── Press feedback values ──
   const confirmScale = useRef(new Animated.Value(1)).current;
   const cancelOpacity = useRef(new Animated.Value(1)).current;
-
   useEffect(() => {
     Animated.stagger(90, [
       // Icon: fade + scale + a tiny settle rotation for a "pop" feel
@@ -255,7 +254,7 @@ const Confirmation = () => {
               <Text style={styles.amountLabel}>TOTAL PAYABLE</Text>
               {feeLoading ? (
                 <ActivityIndicator
-                  color={COLORS.brand}
+                  color={COLORS.white}
                   style={styles.amountLoader}
                 />
               ) : (
@@ -265,7 +264,7 @@ const Confirmation = () => {
                 <MaterialCommunityIcons
                   name="lightning-bolt"
                   size={10}
-                  color={COLORS.brand}
+                  color={COLORS.dashboard}
                 />
                 <Text style={styles.amountBadgeText}>Instant Processing</Text>
               </View>

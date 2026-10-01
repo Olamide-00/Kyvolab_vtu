@@ -19,13 +19,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCompleteRegistration } from "../../../../api/hooks/useAuth";
 import Text from "../../../../components/common/txt";
 
-const BRAND = "#1B3710";
-const BRAND_SOFT = "#EAF3E9";
-const INK = "#141613";
-const MUTED = "#6B7268";
-const BORDER = "#E5E8E3";
-const FIELD_BG = "#FAFBF9";
-const ERROR_RED = "#D92D20";
+const BRAND = "#111111";
+const BRAND_SOFT = "#F0F0F0";
+const INK = "#151515";
+const MUTED = "#707070";
+const BORDER = "#E7E7E7";
+const FIELD_BG = "#FBFBFB";
+const ERROR_RED = "#515151";
 
 const PIN_LENGTH = 4;
 
