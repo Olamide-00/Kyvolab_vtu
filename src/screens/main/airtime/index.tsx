@@ -26,7 +26,6 @@ const Airtime = () => {
     />
   );
 
-  // Only the tab matching the hint gets the preselected network
   return (
     <ContactsProvider>
       {activeTab === "airtime" ? (

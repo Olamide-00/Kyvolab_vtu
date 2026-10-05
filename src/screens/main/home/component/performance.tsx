@@ -66,7 +66,7 @@ const Performance = ({ refreshTick = 0 }: PerformanceProps) => {
     refetch: refetchStats,
   } = useMerchantStats(email, period);
 
-  // Sales volume is derived from existing history (shared query cache
+  // Total credit is derived from existing history (shared query cache
   // with Recent activity, so no extra network calls)
   const { data: bills = [], refetch: refetchBills } = useGetBillsHistory(email);
   const { data: funding = [] } = useGetFundingHistory(email);
@@ -78,19 +78,20 @@ const Performance = ({ refreshTick = 0 }: PerformanceProps) => {
     }
   }, [refreshTick]);
 
-  const sales = useMemo(() => {
+  const credit = useMemo(() => {
     const since = periodStart(period).getTime();
-    let volume = 0;
+    let total = 0;
     let count = 0;
     mergeHistories(bills, funding).forEach((t: TransactionItem) => {
       const when = t.date ? new Date(t.date).getTime() : 0;
       const type = String(t.type || "debit").toLowerCase();
       const status = String(t.status || "").toLowerCase();
-      if (when < since || type === "credit" || status !== "success") return;
-      volume += parseFloat(String(t.amount)) || 0;
+      // Only successful credits inside the selected period
+      if (when < since || type !== "credit" || status !== "success") return;
+      total += parseFloat(String(t.amount)) || 0;
       count += 1;
     });
-    return { volume, count };
+    return { total, count };
   }, [bills, funding, period]);
 
   const caption = PERIODS.find((p) => p.value === period)!.caption;
@@ -168,19 +169,15 @@ const Performance = ({ refreshTick = 0 }: PerformanceProps) => {
         <View style={styles.statCard}>
           <View style={styles.statTop}>
             <View style={styles.iconCircleLight}>
-              <Ionicons
-                name="bag-handle-outline"
-                size={17}
-                color={THEME.primary}
-              />
+              <Ionicons name="wallet-outline" size={17} color={THEME.primary} />
             </View>
           </View>
           <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
-            {naira(sales.volume, 0)}
+            {naira(credit.total, 0)}
           </Text>
-          <Text style={styles.cardLabel}>Sales</Text>
+          <Text style={styles.cardLabel}>Total credit</Text>
           <Text style={styles.cardCaption} numberOfLines={1}>
-            {sales.count} {sales.count === 1 ? "transaction" : "transactions"}
+            {credit.count} {credit.count === 1 ? "transaction" : "transactions"}
           </Text>
         </View>
       </View>
