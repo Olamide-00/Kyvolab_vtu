@@ -10,6 +10,10 @@ export const styles = StyleSheet.create({
     // clear the floating tab bar
     paddingBottom: 120,
   },
+  innerHeader: {
+    paddingTop: SPACE.xl,
+    // marginBottom: -60,
+  },
   balanceCard: {
     marginTop: SPACE.md,
     marginHorizontal: SPACE.lg,

@@ -3,8 +3,6 @@ import * as SecureStore from "expo-secure-store";
 
 // const BASE_URL = "http://192.168.1.196:8080/api/v1";
 
-//172.20.10.6
-// 192.168.1.196
 const BASE_URL = "https://api.depay.com.ng/api/v1";
 
 const axiosInstance = axios.create({

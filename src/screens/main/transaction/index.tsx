@@ -204,7 +204,7 @@ const Transaction = () => {
   );
 
   const header = (
-    <View>
+    <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
       {/* Title */}
       <Text style={styles.title}>Transactions</Text>
 
@@ -267,6 +267,7 @@ const Transaction = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chips}
         style={styles.chipScroll}
+        keyboardShouldPersistTaps="handled"
       >
         <Chip
           label="All"
@@ -424,22 +425,21 @@ const Transaction = () => {
 
   return (
     <View style={styles.root}>
+      {header}
       <SectionList
+        style={styles.list}
         sections={sections}
         keyExtractor={(item) => item.key}
         renderItem={renderRow}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionTitle}>{section.title}</Text>
         )}
-        ListHeaderComponent={header}
         ListEmptyComponent={empty}
         stickySectionHeadersEnabled={false}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.content,
-          { paddingTop: insets.top + 16 },
-        ]}
+        contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
             refreshing={billsRefetching || fundingRefetching}
@@ -463,6 +463,13 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: THEME.bg,
+  },
+  header: {
+    paddingHorizontal: 16,
+    backgroundColor: THEME.bg,
+  },
+  list: {
+    flex: 1,
   },
   content: {
     paddingHorizontal: 16,
@@ -546,6 +553,7 @@ const styles = StyleSheet.create({
   chipScroll: {
     marginTop: 14,
     marginHorizontal: -16,
+    flexGrow: 0,
   },
   chips: {
     paddingHorizontal: 16,

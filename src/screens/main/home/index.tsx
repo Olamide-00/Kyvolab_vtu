@@ -16,21 +16,26 @@ export function Home() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // bump tick — Dashboard + Performance watch this to refetch
     setRefreshTick((t) => t + 1);
-    // spinner shows for ~1s then hides; the refetches handle actual timing
     setTimeout(() => setRefreshing(false), 1000);
   }, []);
 
   return (
     <View style={styles.root}>
       <StatusBar barStyle="dark-content" />
+      <View style={styles.innerHeader}>
+        <View style={styles.section}>
+          <Header />
+        </View>
+
+        {/* Balance — the one dark surface on the page */}
+        <View style={styles.balanceCard}>
+          <Dashboard refreshTick={refreshTick} />
+        </View>
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: insets.top + 4 },
-        ]}
+        contentContainerStyle={[styles.scrollContent]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -40,15 +45,6 @@ export function Home() {
           />
         }
       >
-        <View style={styles.section}>
-          <Header />
-        </View>
-
-        {/* Balance — the one dark surface on the page */}
-        <View style={styles.balanceCard}>
-          <Dashboard refreshTick={refreshTick} />
-        </View>
-
         {/* Merchant performance: earnings, referrals, sales */}
         <View style={styles.section}>
           <Performance refreshTick={refreshTick} />
