@@ -46,7 +46,6 @@ const Profile = () => {
   const bankName = account?.bankName;
   const accountName = account?.accountName;
 
-  // Earnings + referrals — placeholder until the merchant endpoint lands
   const { data: stats } = useMerchantStats(email, "month");
 
   const showImage = !!profilePicture && !imageFailed;

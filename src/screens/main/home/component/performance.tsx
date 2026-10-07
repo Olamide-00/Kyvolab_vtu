@@ -25,7 +25,7 @@ import { FONTS, RADIUS, THEME } from "../../../../theme";
 
 const PERIODS: { value: StatsPeriod; label: string; caption: string }[] = [
   { value: "today", label: "Today", caption: "today" },
-  { value: "week", label: "This week", caption: "in the last 7 days" },
+  { value: "week", label: "This week", caption: "this week" },
   { value: "month", label: "This month", caption: "this month" },
 ];
 
@@ -37,7 +37,7 @@ const periodStart = (period: StatsPeriod) => {
   }
   if (period === "week") {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    d.setDate(d.getDate() - 6);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
     return d;
   }
   return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -59,7 +59,6 @@ const Performance = ({ refreshTick = 0 }: PerformanceProps) => {
 
   const email = useAuthStore((s) => s.userData?.email) || "";
 
-  // Earnings + referrals — backend endpoint pending (see useMerchantStats)
   const {
     data: stats,
     isLoading: statsLoading,

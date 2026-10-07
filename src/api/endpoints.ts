@@ -47,6 +47,18 @@ export const API_ENDPOINTS = {
   TRANSFER_REMIT: "/transferRemit",
   FUNDING_HISTORY: "/bank/funding-history",
 
+  // referrals and commission earnings
+  REFERRAL_ME: "/referral/me",
+  REFERRAL_STATS: "/referral/stats",
+  REFERRAL_TERMS: "/referral/terms",
+  REFERRAL_LIST: "/referral/referrals",
+  EARNINGS_SUMMARY: "/referral/earnings",
+  EARNINGS_HISTORY: "/referral/earnings/history",
+  EARNINGS_MONTHLY: "/referral/earnings/monthly",
+  EARNINGS_BY_SERVICE: "/referral/earnings/by-service",
+  VALIDATE_REFERRAL_CODE: (code: string) =>
+    `/user/referral-code/${encodeURIComponent(code)}`,
+
   // percentage
   PERCENTAGE: "/percentage",
 };

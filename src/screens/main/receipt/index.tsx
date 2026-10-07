@@ -58,6 +58,18 @@ const Receipt = () => {
     "---";
   const referralCode = userData?.tag ? `Depay${userData.tag}` : "DEPAYREF123";
   const isSuccess = status === "SUCCESS";
+  const isPending = status === "PENDING";
+  const statusLabel = isSuccess
+    ? "Successful"
+    : isPending
+      ? "Processing"
+      : status.charAt(0) + status.slice(1).toLowerCase();
+  const serviceCharge = Number(transaction.fee) || 0;
+  const cashbackEarned = isSuccess
+    ? Number(transaction.commissionEarned) || 0
+    : 0;
+  const naira = (value: number) =>
+    `₦${value.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // ── Helpers for optional fields ──
   const isValidValue = (v: any) => {
@@ -363,12 +375,16 @@ const Receipt = () => {
                 variant="semibold"
                 color={isSuccess ? "#7F7F7F" : "#4D4D4D"}
               >
-                {isSuccess
-                  ? "Successful"
-                  : status.charAt(0) + status.slice(1).toLowerCase()}
+                {statusLabel}
               </Text>
               <MaterialCommunityIcons
-                name={isSuccess ? "check-circle" : "close-circle"}
+                name={
+                  isSuccess
+                    ? "check-circle"
+                    : isPending
+                      ? "clock-outline"
+                      : "close-circle"
+                }
                 size={13}
                 color={isSuccess ? "#9B9B9B" : "#686868"}
               />
@@ -404,9 +420,18 @@ const Receipt = () => {
                 minimumFractionDigits: 2,
               })}`}
             />
+            {serviceCharge > 0 && (
+              <DetailRow label="Service Charge" value={naira(serviceCharge)} />
+            )}
+            {cashbackEarned > 0 && (
+              <DetailRow
+                label="Cashback Earned"
+                value={naira(cashbackEarned)}
+              />
+            )}
             <DetailRow
               label="Status"
-              value={isSuccess ? "Success" : status}
+              value={statusLabel === "Successful" ? "Success" : statusLabel}
               valueColor={isSuccess ? "#9B9B9B" : "#686868"}
             />
             <DetailRow

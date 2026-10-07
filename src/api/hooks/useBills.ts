@@ -88,8 +88,10 @@ export const usePayBills = () => {
       return response.data;
     },
     onSuccess: () => {
-      // Invalidate the queryKey for bills history to refetch updated data
       queryClient.invalidateQueries({ queryKey: ["bills", "histories"] });
+      queryClient.invalidateQueries({ queryKey: ["balance"] });
+      queryClient.invalidateQueries({ queryKey: ["merchant"] });
+      queryClient.invalidateQueries({ queryKey: ["referral"] });
     },
   });
 };

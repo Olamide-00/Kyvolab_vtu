@@ -26,7 +26,8 @@ interface CompleteRegistrationData {
   gender?: string;
   dateOfBirth?: string;
   phoneNumber?: string;
-  // referralCode?: string;
+  referralCode?: string;
+  deviceId?: string;
 }
 
 interface LoginData {

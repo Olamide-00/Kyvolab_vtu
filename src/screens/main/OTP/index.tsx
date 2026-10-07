@@ -177,24 +177,33 @@ const OTP = () => {
               },
               {
                 onSuccess: (response: any) => {
+                  const txStatus = response?.transaction?.status;
+                  const isPending =
+                    response?.success === true &&
+                    (response?.pending === true || txStatus === "pending");
                   const isSuccess =
                     response?.success === true &&
-                    response?.data?.response_description?.includes(
-                      "TRANSACTION SUCCESSFUL",
-                    );
+                    !isPending &&
+                    (txStatus
+                      ? txStatus === "success"
+                      : response?.data?.response_description?.includes(
+                          "TRANSACTION SUCCESSFUL",
+                        ));
 
-                  if (isSuccess) {
+                  if (isPending) {
+                    hideOverlay(() => setStage("idle"));
+                    setTimeout(() => {
+                      navigation.navigate("Success", {
+                        success: true,
+                        pending: true,
+                        transaction: response?.transaction,
+                        message: response?.message,
+                      });
+                    }, 180);
+                  } else if (isSuccess) {
                     goToStage("success");
                     setTimeout(() => {
                       hideOverlay(() => setStage("idle"));
-                      // Use the normalized `transaction` object (lowercase
-                      // status, category, label, date — matches what the
-                      // history screens render) instead of the raw VTPass
-                      // `data` payload, which has no top-level `status`
-                      // field and was making the receipt show "Pending"
-                      // right after a successful payment. `|| response?.data`
-                      // is just a safety fallback in case `transaction` is
-                      // ever missing from the response.
                       navigation.navigate("Receipt", {
                         transaction: response?.transaction || response?.data,
                       });

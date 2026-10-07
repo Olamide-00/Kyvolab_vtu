@@ -12,7 +12,12 @@ const Success = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
-  const { success = true } = route.params || {};
+  const {
+    success = true,
+    pending = false,
+    transaction,
+    message,
+  } = route.params || {};
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -49,6 +54,7 @@ const Success = () => {
   }, []);
 
   const isSuccess = success === true;
+  const isPending = pending === true;
 
   return (
     <View style={[styles.root, !isSuccess && styles.rootFailed]}>
@@ -70,7 +76,13 @@ const Success = () => {
           <View
             style={[styles.iconInner, !isSuccess && styles.iconInnerFailed]}
           >
-            {isSuccess ? (
+            {isPending ? (
+              <MaterialCommunityIcons
+                name="clock-outline"
+                size={52}
+                color="#fff"
+              />
+            ) : isSuccess ? (
               <MaterialCommunityIcons name="check" size={52} color="#fff" />
             ) : (
               <MaterialCommunityIcons name="close" size={52} color="#fff" />
@@ -87,13 +99,20 @@ const Success = () => {
         ]}
       >
         <Text variant="bold" size="3xl" color="#fff" center>
-          {isSuccess ? "Payment\nSuccessful!" : "Payment\nFailed"}
+          {isPending
+            ? "Payment\nProcessing"
+            : isSuccess
+              ? "Payment\nSuccessful!"
+              : "Payment\nFailed"}
         </Text>
 
         <Text variant="regular" size="sm" color="rgba(255,255,255,0.65)" center>
-          {isSuccess
-            ? "Your transaction has been\nprocessed and confirmed."
-            : "We couldn't complete your\npayment. Please try again."}
+          {isPending
+            ? message ||
+              "We're confirming your payment with the provider.\nIf it doesn't go through, your wallet is refunded automatically."
+            : isSuccess
+              ? "Your transaction has been\nprocessed and confirmed."
+              : "We couldn't complete your\npayment. Please try again."}
         </Text>
 
         {/* Status pill */}
@@ -104,7 +123,11 @@ const Success = () => {
             variant="semibold"
             color={isSuccess ? "#7F7F7F" : "#4D4D4D"}
           >
-            {isSuccess ? "Transaction Confirmed" : "Transaction Declined"}
+            {isPending
+              ? "Awaiting Confirmation"
+              : isSuccess
+                ? "Transaction Confirmed"
+                : "Transaction Declined"}
           </Text>
         </View>
       </Animated.View>
@@ -116,7 +139,28 @@ const Success = () => {
           { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
         ]}
       >
-        {isSuccess ? (
+        {isPending ? (
+          <>
+            {transaction ? (
+              <Btn
+                title="View Receipt"
+                style={styles.btnPrimary}
+                textStyle={styles.btnPrimaryText}
+                onPress={() => navigation.navigate("Receipt", { transaction })}
+              />
+            ) : null}
+            <Btn
+              title="Back to Home"
+              style={transaction ? styles.btnGhost : styles.btnPrimary}
+              textStyle={
+                transaction ? styles.btnGhostText : styles.btnPrimaryText
+              }
+              onPress={() =>
+                navigation.navigate("TabNav", { screen: "HomeTab" })
+              }
+            />
+          </>
+        ) : isSuccess ? (
           <Btn
             title="Back to Home"
             style={styles.btnPrimary}

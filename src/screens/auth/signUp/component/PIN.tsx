@@ -17,6 +17,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCompleteRegistration } from "../../../../api/hooks/useAuth";
+import { getDeviceId } from "../../../../utils/deviceId";
 import Text from "../../../../components/common/txt";
 
 const BRAND = "#111111";
@@ -40,8 +41,15 @@ const SignUpTransactionPin = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const insets = useSafeAreaInsets();
-  const { email, password, fullName, phoneNumber, gender, dateOfBirth } =
-    route.params;
+  const {
+    email,
+    password,
+    fullName,
+    phoneNumber,
+    gender,
+    dateOfBirth,
+    referralCode,
+  } = route.params;
 
   const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
   const [confirmPin, setConfirmPin] = useState<string[]>(
@@ -90,7 +98,7 @@ const SignUpTransactionPin = () => {
     confirmPinInputRefs.current[0]?.focus();
   };
 
-  const submitRegistration = (code: string) => {
+  const submitRegistration = async (code: string) => {
     // Synchronous guard — see hasSubmittedRef comment above. Checking
     // isPending alone isn't enough here because of the render-timing gap.
     if (hasSubmittedRef.current || isPending) return;
@@ -98,6 +106,8 @@ const SignUpTransactionPin = () => {
 
     Keyboard.dismiss();
     setError("");
+
+    const deviceId = await getDeviceId();
 
     completeRegistration(
       {
@@ -108,6 +118,8 @@ const SignUpTransactionPin = () => {
         dateOfBirth,
         phoneNumber,
         transactionPIN: code,
+        referralCode,
+        deviceId,
       },
       {
         onSuccess: () => {

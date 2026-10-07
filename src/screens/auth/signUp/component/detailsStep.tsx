@@ -11,14 +11,16 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Stepper from "./stepper";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Text from "../../../../components/common/txt";
+import { useValidateReferralCode } from "../../../../api/hooks/useReferral";
 
 const BRAND = "#111111";
 const BRAND_SOFT = "#F0F0F0";
@@ -37,7 +39,10 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-type FieldName = "name" | "phone" | null;
+type FieldName = "name" | "phone" | "referral" | null;
+type ReferralStatus = "idle" | "checking" | "valid" | "invalid";
+
+const REFERRAL_MIN_LENGTH = 6;
 
 const GENDER_OPTIONS = [
   { label: "Male", value: "male", icon: "gender-male" as const },
@@ -78,6 +83,54 @@ const SignUpDetails = () => {
   const [focusedField, setFocusedField] = useState<FieldName>(null);
   const [error, setError] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [referralStatus, setReferralStatus] = useState<ReferralStatus>("idle");
+  const [referralMessage, setReferralMessage] = useState("");
+  const latestReferralCode = useRef("");
+  const { mutate: validateReferralCode } = useValidateReferralCode();
+
+  useEffect(() => {
+    const code = referralCode.trim().toUpperCase();
+    latestReferralCode.current = code;
+
+    if (code.length < REFERRAL_MIN_LENGTH) {
+      setReferralStatus("idle");
+      setReferralMessage("");
+      return;
+    }
+
+    setReferralStatus("checking");
+    setReferralMessage("");
+
+    const timer = setTimeout(() => {
+      validateReferralCode(code, {
+        onSuccess: (result) => {
+          if (latestReferralCode.current !== code) return;
+          setReferralStatus("valid");
+          setReferralMessage(
+            result.referrerName
+              ? `Referred by ${result.referrerName}`
+              : "Code applied",
+          );
+        },
+        onError: (err) => {
+          if (latestReferralCode.current !== code) return;
+          const status = err.response?.status;
+          if (status === 400 || status === 404) {
+            setReferralStatus("invalid");
+            setReferralMessage(
+              err.response?.data?.message || "This referral code isn't valid",
+            );
+          } else {
+            setReferralStatus("idle");
+            setReferralMessage("");
+          }
+        },
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [referralCode]);
 
   // ─── Keyboard visibility ───────────────────────────────────
   useEffect(() => {
@@ -143,7 +196,9 @@ const SignUpDetails = () => {
     phoneNumber.length === 10 &&
     !!dateOfBirth &&
     !isUnderage &&
-    !!gender;
+    !!gender &&
+    referralStatus !== "invalid" &&
+    referralStatus !== "checking";
 
   const handleContinue = () => {
     if (!canContinue || !dateOfBirth) return;
@@ -158,6 +213,10 @@ const SignUpDetails = () => {
       phoneNumber,
       gender,
       dateOfBirth: dateOfBirth.toISOString().split("T")[0],
+      referralCode:
+        referralCode.trim().length >= REFERRAL_MIN_LENGTH
+          ? referralCode.trim().toUpperCase()
+          : undefined,
     });
   };
 
@@ -327,6 +386,58 @@ const SignUpDetails = () => {
             })}
           </View>
 
+          {/* REFERRAL CODE */}
+          <Text style={styles.label}>Referral code (optional)</Text>
+          <View
+            style={[
+              styles.inputWrapper,
+              focusedField === "referral" && styles.inputWrapperFocused,
+              referralStatus === "invalid" && styles.inputWrapperError,
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="gift-outline"
+              size={20}
+              color={focusedField === "referral" ? BRAND : MUTED}
+            />
+            <TextInput
+              placeholder="Enter a friend's code"
+              placeholderTextColor="#ADADAD"
+              value={referralCode}
+              onChangeText={(text) => {
+                setReferralCode(text.replace(/[^a-zA-Z0-9]/g, "").slice(0, 12));
+                if (error) setError("");
+              }}
+              onFocus={() => setFocusedField("referral")}
+              onBlur={() => setFocusedField(null)}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
+              style={styles.input}
+            />
+            {referralStatus === "checking" && (
+              <ActivityIndicator size="small" color={MUTED} />
+            )}
+            {referralStatus === "valid" && (
+              <MaterialCommunityIcons
+                name="check-circle"
+                size={20}
+                color={BRAND}
+              />
+            )}
+          </View>
+          {referralMessage ? (
+            <Text
+              style={[
+                styles.referralHint,
+                referralStatus === "invalid" && styles.referralHintInvalid,
+              ]}
+            >
+              {referralMessage}
+            </Text>
+          ) : null}
+
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </ScrollView>
 
@@ -484,6 +595,14 @@ const styles = StyleSheet.create({
     color: INK,
     fontSize: 16,
     height: "100%",
+  },
+  referralHint: {
+    color: MUTED,
+    fontSize: 13,
+    marginTop: 8,
+  },
+  referralHintInvalid: {
+    color: ERROR_RED,
   },
   valueText: {
     flex: 1,
